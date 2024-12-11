@@ -194,6 +194,10 @@ typedef struct {
     Konami flywheel_konami;
     Konami headlights_on_konami;
     Konami headlights_off_konami;
+
+    float pitch_rate_current;
+    float last_setpoint;
+    float max_pitch_rate;
 } data;
 
 static void flywheel_stop(data *d);
@@ -372,6 +376,10 @@ static void configure(data *d) {
     } else {
         beep_alert(d, 1, false);
     }
+
+    d->max_pitch_rate = 100.0f;  // Max pitch rate in deg/s, tune as needed
+    d->pitch_rate_current = 0.0f;
+    d->last_setpoint = 0.0f;
 }
 
 static void leds_headlights_switch(CfgLeds *cfg_leds, LcmData *lcm, bool headlights_on) {
@@ -1278,6 +1286,30 @@ static void refloat_thd(void *arg) {
 
             float new_pid_value = scaled_kp * d->proportional + d->integral;
 
+            // Angular Rate Control //
+            float current_pitch_rate = -d->gyro[1];
+            float setpoint_rate = (d->setpoint - d->last_setpoint) / d->dt;
+
+            // If setpoint is changing in same direction as pitch AND faster than max_pitch_rate,
+            // use setpoint_rate as our limit instead
+            float rate_limit = d->max_pitch_rate;
+            if (sign(setpoint_rate) == sign(current_pitch_rate) && 
+                fabsf(setpoint_rate) > rate_limit) {
+                rate_limit = fabsf(setpoint_rate);
+            }
+
+            float excess_rate = fabsf(current_pitch_rate) - rate_limit;
+            if (excess_rate > 0) {
+                float correction = excess_rate * 1.5f;
+                correction *= -sign(current_pitch_rate);
+                d->pitch_rate_current = d->pitch_rate_current * 0.9f + correction * 0.1f;
+            } else {
+                d->pitch_rate_current *= 0.9f;
+            }
+
+            new_pid_value += d->pitch_rate_current;
+            // //////////////////// //
+
             // Only apply Rate P and Booster after the board is centered
             if (d->state.sat != SAT_CENTERING) {
                 float rate = -d->gyro[1] * d->float_conf.kp2;
@@ -1457,6 +1489,8 @@ static void refloat_thd(void *arg) {
             &d->motor_control, d->motor.abs_erpm_smooth, d->state.state, d->current_time
         );
         VESC_IF->sleep_us(d->loop_time_us);
+
+        d->last_setpoint = d->setpoint;
     }
 }
 
