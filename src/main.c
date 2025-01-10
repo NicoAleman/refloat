@@ -143,7 +143,8 @@ typedef struct {
     float pid_value;
 
     float setpoint, setpoint_target, setpoint_target_interpolated;
-    float applied_booster_current;
+    float applied_booster_current, booster_fade_factor;
+    float pi, faded_pi;
     float noseangling_interpolated, inputtilt_interpolated;
     float turntilt_target, turntilt_interpolated;
     float current_time;
@@ -389,6 +390,9 @@ static void reset_runtime_vars(data *d) {
     d->setpoint_target_interpolated = d->balance_pitch;
     d->setpoint_target = 0;
     d->applied_booster_current = 0;
+    d->booster_fade_factor = 0;
+    d->pi = 0;
+    d->faded_pi = 0;
     d->noseangling_interpolated = 0;
     d->inputtilt_interpolated = 0;
     d->turntilt_target = 0;
@@ -1281,7 +1285,9 @@ static void refloat_thd(void *arg) {
                 scaled_kp = d->float_conf.kp * d->kp_accel_scale;
             }
 
-            float new_pid_value = scaled_kp * d->proportional + d->integral;
+            d->pi = scaled_kp * d->proportional + d->integral; // for debugging
+            float new_pi = d->pi;
+            float new_pid_value = 0;
 
             // Only apply Rate P and Booster after the board is centered
             if (d->state.sat != SAT_CENTERING) {
@@ -1294,48 +1300,65 @@ static void refloat_thd(void *arg) {
                 float true_proportional = d->setpoint - d->atr.braketilt_offset - d->pitch;
                 float abs_proportional = fabsf(true_proportional);
 
-                float booster_current, booster_angle, booster_ramp;
-                if (tail_down) {
-                    booster_current = d->float_conf.brkbooster_current;
+                float booster_kp, booster_angle, booster_ramp;
+                if (true_proportional < 0) {
+                    booster_kp = d->float_conf.brkbooster_current; // conf parameter should be changed to new kp
                     booster_angle = d->float_conf.brkbooster_angle;
                     booster_ramp = d->float_conf.brkbooster_ramp;
                 } else {
-                    booster_current = d->float_conf.booster_current;
+                    booster_kp = d->float_conf.booster_current; // conf parameter should be changed to new kp
                     booster_angle = d->float_conf.booster_angle;
                     booster_ramp = d->float_conf.booster_ramp;
                 }
 
-                // Make booster a bit stronger at higher speed (up to 2x stronger when braking)
-                const int boost_min_erpm = 3000;
-                if (d->motor.abs_erpm > boost_min_erpm) {
-                    float speedstiffness = fminf(1, (d->motor.abs_erpm - boost_min_erpm) / 10000);
-                    if (tail_down) {
-                        // use higher current at speed when braking
-                        booster_current += booster_current * speedstiffness;
-                    } else {
-                        // when accelerating, we reduce the booster start angle as we get faster
-                        // strength remains unchanged
-                        float angledivider = 1 + speedstiffness;
-                        booster_angle /= angledivider;
+                // // Make booster a bit stronger at higher speed (up to 2x stronger when braking)
+                // const int boost_min_erpm = 3000;
+                // if (d->motor.abs_erpm > boost_min_erpm) {
+                //     float speedstiffness = fminf(1, (d->motor.abs_erpm - boost_min_erpm) / 10000);
+                //     if (true_proportional < 0) {
+                //         // use higher kp at speed when braking
+                //         booster_kp += booster_kp * speedstiffness;
+                //     } else {
+                //         // when accelerating, we reduce the booster start angle as we get faster
+                //         float angledivider = 1 + speedstiffness;
+                //         booster_angle /= angledivider;
+                //     }
+                // }
+
+                float booster_current = 0; 
+                float target_fade = 0;
+
+                if ((booster_kp > 0) && (abs_proportional > booster_angle)) {
+                    // Apply proportional current based on angle beyond start angle
+                    booster_current = booster_kp * (abs_proportional - booster_angle) * sign(true_proportional);
+
+                    if (sign(d->pi) != sign(booster_current)) { // If PI opposes Booster, phase it out of requested current
+                        if (booster_ramp > 1) { // If Fading is enabled (feature will likely be removed; not necessary)
+                            // Continuous fade that starts at booster_angle
+                            // and reaches maximum at booster_angle + booster_ramp
+                            target_fade = fmaxf(0.0, fminf(1.0, (abs_proportional - booster_angle) / booster_ramp));
+                        } else {
+                            target_fade = 1;
+                        }
                     }
                 }
-
-                if (abs_proportional > booster_angle) {
-                    if (abs_proportional - booster_angle < booster_ramp) {
-                        booster_current *= sign(true_proportional) *
-                            ((abs_proportional - booster_angle) / booster_ramp);
-                    } else {
-                        booster_current *= sign(true_proportional);
-                    }
-                } else {
-                    booster_current = 0;
+                
+                // Avoid harsh changes in PI by smoothing a quickly changing fade factor
+                d->booster_fade_factor = 0.005 * target_fade + 0.995 * d->booster_fade_factor;
+                
+                // Apply fade if there is any, and if pi opposes booster current
+                if (d->booster_fade_factor > 0) {
+                    new_pi *= (1.0 - d->booster_fade_factor);
                 }
-
+               
                 // No harsh changes in booster current (effective delay <= 100ms)
                 d->applied_booster_current =
                     0.01 * booster_current + 0.99 * d->applied_booster_current;
                 new_pid_value += d->applied_booster_current;
             }
+
+            d->faded_pi = new_pi; // for debugging
+            new_pid_value += new_pi;
 
             // Current Limiting!
             float current_limit = d->motor.braking ? d->motor.current_min : d->motor.current_max;
