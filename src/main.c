@@ -1301,7 +1301,7 @@ static void refloat_thd(void *arg) {
                 float abs_proportional = fabsf(true_proportional);
 
                 float booster_kp, booster_angle, booster_ramp;
-                if (true_proportional < 0) {
+                if (true_proportional < 0) { // Currently does not inverse on direction change, need to implement
                     booster_kp = d->float_conf.brkbooster_current; // conf parameter should be changed to new kp
                     booster_angle = d->float_conf.brkbooster_angle;
                     booster_ramp = d->float_conf.brkbooster_ramp;
@@ -1333,17 +1333,11 @@ static void refloat_thd(void *arg) {
                     booster_current = booster_kp * (abs_proportional - booster_angle) * sign(true_proportional);
 
                     if (sign(d->pi) != sign(booster_current)) { // If PI opposes Booster, phase it out of requested current
-                        if (booster_ramp > 1) { // If Fading is enabled (feature will likely be removed; not necessary)
-                            // Continuous fade that starts at booster_angle
-                            // and reaches maximum at booster_angle + booster_ramp
-                            target_fade = fmaxf(0.0, fminf(1.0, (abs_proportional - booster_angle) / booster_ramp));
-                        } else {
-                            target_fade = 1;
-                        }
+                        target_fade = 1;
                     }
                 }
                 
-                // Avoid harsh changes in PI by smoothing a quickly changing fade factor
+                // Avoid harsh changes in PI by smoothing a changed fade factor
                 d->booster_fade_factor = 0.005 * target_fade + 0.995 * d->booster_fade_factor;
                 
                 // Apply fade if there is any, and if pi opposes booster current
@@ -1351,9 +1345,23 @@ static void refloat_thd(void *arg) {
                     new_pi *= (1.0 - d->booster_fade_factor);
                 }
                
-                // No harsh changes in booster current (effective delay <= 100ms)
-                d->applied_booster_current =
-                    0.01 * booster_current + 0.99 * d->applied_booster_current;
+                if (booster_ramp > 1.0 && // If Booster Rate Limiting is enabled
+                    sign(booster_current) == sign(d->applied_booster_current) && // AND if Booster Target is moving away from zero
+                    fabsf(booster_current) > fabsf(d->applied_booster_current)) {
+
+                    // Scale ramp rate: 0 A/s at 1.0, 450 A/s at 10.0 (50A/s per 1.0 increment) [Just for testing with existing config signature]
+                    float ramp_rate = 50.0f * (booster_ramp - 1.0f);
+                    float max_change = ramp_rate / d->float_conf.hertz;
+
+                    float change = booster_current - d->applied_booster_current;
+                    d->applied_booster_current += fminf(fabsf(change), max_change) * sign(change);
+
+                } else {
+                    // Use original smoothing for all other cases
+                    d->applied_booster_current =
+                        0.01 * booster_current + 0.99 * d->applied_booster_current;
+                }
+                
                 new_pid_value += d->applied_booster_current;
             }
 
