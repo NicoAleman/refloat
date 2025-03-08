@@ -3944,6 +3944,7 @@ p, li { white-space: pre-wrap; }
                     <param>::sep::Booster (Braking)</param>
                     <param>brkbooster_angle</param>
                     <param>brkbooster_ramp</param>
+                    <param>brkbooster_current</param>
                     <param>::sep::Booster Testing</param>
                     <param>booster_target_fade</param>
                     <param>booster_target_fade_alpha</param>
