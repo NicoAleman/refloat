@@ -349,52 +349,6 @@ p, li { white-space: pre-wrap; }
             <suffix></suffix>
             <vTx>7</vTx>
         </target_filter.in_alpha_back>
-        <target_filter.ema_half_time>
-            <longName>EMA Half Time</longName>
-            <type>1</type>
-            <transmittable>1</transmittable>
-            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The Half Time (time it takes to reach half the target value) of the 3rd order EMA filter, which approximates a Gaussian filter. Higher values mean more filtering.&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;(equivalent of alpha of the 3-Stage and other filters, it's intended to present a number that's easier to understand)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_EMA_FILTER_HALF_TIME</cDefine>
-            <editorDecimalsDouble>0</editorDecimalsDouble>
-            <editorScale>1000</editorScale>
-            <editAsPercentage>0</editAsPercentage>
-            <maxDouble>2</maxDouble>
-            <minDouble>0.02</minDouble>
-            <showDisplay>0</showDisplay>
-            <stepDouble>20</stepDouble>
-            <valDouble>0.36</valDouble>
-            <vTxDoubleScale>1000</vTxDoubleScale>
-            <suffix> ms</suffix>
-            <vTx>7</vTx>
-        </target_filter.ema_half_time>
-        <target_filter.ema_return_multiplier>
-            <longName>EMA Return Multiplier</longName>
-            <type>1</type>
-            <transmittable>1</transmittable>
-            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Multiplier for the return to zero filter speed of the 3rd order EMA filter. E.g. setting this to 2 will mean the change back to zero will be twice as fast than going away from zero.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_EMA_FILTER_RETURN_MULTIPLIER</cDefine>
-            <editorDecimalsDouble>2</editorDecimalsDouble>
-            <editorScale>1</editorScale>
-            <editAsPercentage>0</editAsPercentage>
-            <maxDouble>10</maxDouble>
-            <minDouble>0.1</minDouble>
-            <showDisplay>0</showDisplay>
-            <stepDouble>0.2</stepDouble>
-            <valDouble>2</valDouble>
-            <vTxDoubleScale>1000</vTxDoubleScale>
-            <suffix></suffix>
-            <vTx>7</vTx>
-        </target_filter.ema_return_multiplier>
         <hertz>
             <longName>Loop Hertz</longName>
             <type>2</type>
@@ -3797,8 +3751,6 @@ p, li { white-space: pre-wrap; }
         <ser>target_filter.alpha</ser>
         <ser>target_filter.in_alpha_away</ser>
         <ser>target_filter.in_alpha_back</ser>
-        <ser>target_filter.ema_half_time</ser>
-        <ser>target_filter.ema_return_multiplier</ser>
         <ser>hertz</ser>
         <ser>fault_pitch</ser>
         <ser>fault_roll</ser>
@@ -4018,8 +3970,6 @@ p, li { white-space: pre-wrap; }
                     <param>target_filter.alpha</param>
                     <param>target_filter.in_alpha_away</param>
                     <param>target_filter.in_alpha_back</param>
-                    <param>target_filter.ema_half_time</param>
-                    <param>target_filter.ema_return_multiplier</param>
                     <param>::sep::Nose Angling</param>
                     <param>atr_angle_limit</param>
                     <param>atr_on_speed</param>

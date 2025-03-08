@@ -183,8 +183,8 @@ typedef struct {
     float alpha;
     float in_alpha_away;
     float in_alpha_back;
-    float ema_half_time;
-    float ema_return_multiplier;
+    // float ema_half_time;
+    // float ema_return_multiplier;
 } CfgTargetFilter;
 
 typedef struct {

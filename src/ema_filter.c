@@ -25,7 +25,7 @@ void ema_filter_configure(
     EMAFilter *filter, const CfgTargetFilter *cfg, float on_speed, float off_speed
 ) {
     filter->cfg = *cfg;
-    filter->k = 0.693f / max(cfg->ema_half_time, 0.001f);
+    filter->k = 0.693f / max(/*cfg->ema_half_time*/ 0.36f, 0.001f);
     filter->on_speed = on_speed;
     filter->off_speed = off_speed;
 }
@@ -39,7 +39,7 @@ void ema_filter_reset(EMAFilter *filter, float value, float speed) {
 void ema_filter_update(EMAFilter *filter, float target, float dt) {
     float k = filter->k;
     if (fabsf(target) < fabsf(filter->value)) {
-        k *= filter->cfg.ema_return_multiplier;
+        k *= /*filter->cfg.ema_return_multiplier*/ 2.0f;
     }
 
     // Coefficients chosen to approximate Gaussian filter and preserve half time
