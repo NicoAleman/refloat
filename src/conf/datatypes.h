@@ -192,6 +192,7 @@ typedef struct {
     float kp;
     float ki;
     float kp2;
+    float kp2_b;
     float mahony_kp;
     float mahony_kp_roll;
     float kp_brake;

@@ -1295,7 +1295,8 @@ static void refloat_thd(void *arg) {
                 float pi_limit = current_limit; // Limit PI to current limit to avoid counter-acting Booster / Rate P too much
                 float booster_limit = current_limit; // Limit Booster to current limit to avoid counter-acting Rate P
 
-                float rate = -d->gyro[1] * d->float_conf.kp2;
+                float rate =    (-d->gyro[1] * d->float_conf.kp2) + 
+                                (-sign(d->gyro[1]) * pow(d->gyro[1], 2) * d->float_conf.kp2_b);
                 d->rate_p = (rate > 0 ? d->kp2_accel_scale : d->kp2_brake_scale) * rate;
                 new_pid_value += d->rate_p;
 
