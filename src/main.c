@@ -1301,15 +1301,15 @@ static void refloat_thd(void *arg) {
                 float true_proportional = d->setpoint - d->atr.braketilt_offset - d->noseangling_interpolated - d->pitch;
                 float abs_proportional = fabsf(true_proportional);
 
-                float booster_kp, booster_angle, booster_ramp;
+                float booster_kp, booster_angle, booster_ramp_rate;
                 if (true_proportional < 0) { // Currently does not inverse on direction change, need to implement
                     booster_kp = d->float_conf.brkbooster_current; // conf parameter should be changed to new kp
                     booster_angle = d->float_conf.brkbooster_angle;
-                    booster_ramp = d->float_conf.brkbooster_ramp;
+                    booster_ramp_rate = d->float_conf.brkbooster_ramp;
                 } else {
                     booster_kp = d->float_conf.booster_current; // conf parameter should be changed to new kp
                     booster_angle = d->float_conf.booster_angle;
-                    booster_ramp = d->float_conf.booster_ramp;
+                    booster_ramp_rate = d->float_conf.booster_ramp;
                 }
 
                 // // Make booster a bit stronger at higher speed (up to 2x stronger when braking)
@@ -1346,13 +1346,11 @@ static void refloat_thd(void *arg) {
                     new_pi *= (1.0 - d->booster_fade_factor);
                 }
                
-                if (booster_ramp > 1.0 && // If Booster Rate Limiting is enabled
+                if (booster_ramp_rate > 0.0 && // If Booster Rate Limiting is enabled
                     sign(booster_current) == sign(d->applied_booster_current) && // AND if Booster Target is moving away from zero
                     fabsf(booster_current) > fabsf(d->applied_booster_current)) {
 
-                    // Scale ramp rate: 0 A/s at 1.0, 450 A/s at 10.0 (50A/s per 1.0 increment) [Just for testing with existing config signature]
-                    float ramp_rate = 50.0f * (booster_ramp - 1.0f);
-                    float max_change = ramp_rate / d->float_conf.hertz;
+                    float max_change = booster_ramp_rate / d->float_conf.hertz;
 
                     float change = booster_current - d->applied_booster_current;
                     d->applied_booster_current += fminf(fabsf(change), max_change) * sign(change);

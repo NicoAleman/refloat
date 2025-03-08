@@ -1672,7 +1672,7 @@ p, li { white-space: pre-wrap; }
             <vTx>7</vTx>
         </booster_angle>
         <booster_ramp>
-            <longName>Ramp Up</longName>
+            <longName>Ramp Rate</longName>
             <type>1</type>
             <transmittable>1</transmittable>
             <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -1686,17 +1686,17 @@ p, li { white-space: pre-wrap; }
             <editorDecimalsDouble>1</editorDecimalsDouble>
             <editorScale>1</editorScale>
             <editAsPercentage>0</editAsPercentage>
-            <maxDouble>10</maxDouble>
-            <minDouble>1</minDouble>
+            <maxDouble>500</maxDouble>
+            <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
-            <stepDouble>0.5</stepDouble>
-            <valDouble>4</valDouble>
+            <stepDouble>25</stepDouble>
+            <valDouble>50</valDouble>
             <vTxDoubleScale>100</vTxDoubleScale>
-            <suffix> °</suffix>
+            <suffix> A/s</suffix>
             <vTx>7</vTx>
         </booster_ramp>
         <booster_current>
-            <longName>Current Boost</longName>
+            <longName>Boost Angle P</longName>
             <type>1</type>
             <transmittable>1</transmittable>
             <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -1742,7 +1742,7 @@ p, li { white-space: pre-wrap; }
             <vTx>7</vTx>
         </brkbooster_angle>
         <brkbooster_ramp>
-            <longName>Ramp Up</longName>
+            <longName>Ramp Rate</longName>
             <type>1</type>
             <transmittable>1</transmittable>
             <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -1756,17 +1756,17 @@ p, li { white-space: pre-wrap; }
             <editorDecimalsDouble>1</editorDecimalsDouble>
             <editorScale>1</editorScale>
             <editAsPercentage>0</editAsPercentage>
-            <maxDouble>10</maxDouble>
-            <minDouble>1</minDouble>
+            <maxDouble>500</maxDouble>
+            <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
-            <stepDouble>0.5</stepDouble>
-            <valDouble>4</valDouble>
+            <stepDouble>25</stepDouble>
+            <valDouble>50</valDouble>
             <vTxDoubleScale>100</vTxDoubleScale>
-            <suffix> °</suffix>
+            <suffix> A/s</suffix>
             <vTx>7</vTx>
         </brkbooster_ramp>
         <brkbooster_current>
-            <longName>Current Boost</longName>
+            <longName>Boost Angle P</longName>
             <type>1</type>
             <transmittable>1</transmittable>
             <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
