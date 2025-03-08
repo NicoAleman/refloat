@@ -1297,7 +1297,8 @@ static void refloat_thd(void *arg) {
 
                 // Apply Booster (Now based on True Pitch)
                 // Braketilt excluded to allow for soft brakes that strengthen when near tail-drag
-                float true_proportional = d->setpoint - d->atr.braketilt_offset - d->pitch;
+                // Nose-Angling (Constant/Variable) excluded to allow for safer nose clearance without sacrificing braking
+                float true_proportional = d->setpoint - d->atr.braketilt_offset - d->noseangling_interpolated - d->pitch;
                 float abs_proportional = fabsf(true_proportional);
 
                 float booster_kp, booster_angle, booster_ramp;
