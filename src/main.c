@@ -1291,10 +1291,6 @@ static void refloat_thd(void *arg) {
 
             // Only apply Rate P and Booster after the board is centered
             if (d->state.sat != SAT_CENTERING) {
-                float current_limit = fmaxf(d->motor.current_min, d->motor.current_max);
-                float pi_limit = current_limit; // Limit PI to current limit to avoid counter-acting Booster / Rate P too much
-                float booster_limit = current_limit; // Limit Booster to current limit to avoid counter-acting Rate P
-
                 float rate =    (-d->gyro[1] * d->float_conf.kp2) + 
                                 (-sign(d->gyro[1]) * pow(d->gyro[1], 2) * d->float_conf.kp2_b);
                 d->rate_p = (rate > 0 ? d->kp2_accel_scale : d->kp2_brake_scale) * rate;
@@ -1351,31 +1347,7 @@ static void refloat_thd(void *arg) {
                 
                 // Apply fade if there is any
                 if (d->booster_fade_factor > 0) {
-                    pi_limit *= (1.0 - d->booster_fade_factor);
-                }
-
-                // Limit PI to avoid counter-acting Booster and Rate P too much
-                if (fabsf(new_pi) > pi_limit) {
-                    new_pi = sign(new_pi) * pi_limit;
-                }
-
-                /////////
-
-                // If PI opposes Booster, allow Booster to fully counteract it and reach the current limit.
-                if (sign(new_pi) != sign(booster_current)) {
-                    booster_limit += fabsf(new_pi);
-                } 
-                // If same sign, limit PI such that PI + Booster <= Current Limit
-                else {
-                    float new_pi_limit = fmaxf(0, (current_limit - fabsf(booster_current)));
-                    if (fabsf(new_pi) > new_pi_limit) {
-                        new_pi = sign(new_pi) * new_pi_limit;
-                    }
-                }
-
-                // Limit Booster (as described above)
-                if (fabsf(booster_current) > booster_limit) {
-                    booster_current = sign(booster_current) * booster_limit;
+                    new_pi *= (1.0 - d->booster_fade_factor);
                 }
                
                 if (booster_ramp_rate > 0.0 && // If Booster Rate Limiting is enabled
