@@ -91,7 +91,7 @@ p, li { white-space: pre-wrap; }
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Final Rate P = (Rate P * Gyro) + (Rate P Expo * Gyro^2)&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Recommended Value: 0.050 (Change Rate P lower to 0.5)&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Recommended Value: 0.030 (Change Rate P lower to 0.4)&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;https://www.desmos.com/calculator/qzhfocehoe&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#9696ff;&quot;&gt;https://www.desmos.com/calculator/qzhfocehoe&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
             <cDefine>CFG_DFLT_KP2_B</cDefine>
             <editorDecimalsDouble>3</editorDecimalsDouble>
@@ -1668,7 +1668,7 @@ p, li { white-space: pre-wrap; }
             <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>25</stepDouble>
-            <valDouble>50</valDouble>
+            <valDouble>75</valDouble>
             <vTxDoubleScale>100</vTxDoubleScale>
             <suffix> A/s</suffix>
             <vTx>7</vTx>
@@ -1692,7 +1692,7 @@ p, li { white-space: pre-wrap; }
             <stepDouble>2</stepDouble>
             <valDouble>0</valDouble>
             <vTxDoubleScale>100</vTxDoubleScale>
-            <suffix> A</suffix>
+            <suffix> A/°</suffix>
             <vTx>7</vTx>
         </booster_current>
         <brkbooster_angle>
@@ -1738,7 +1738,7 @@ p, li { white-space: pre-wrap; }
             <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>25</stepDouble>
-            <valDouble>50</valDouble>
+            <valDouble>75</valDouble>
             <vTxDoubleScale>100</vTxDoubleScale>
             <suffix> A/s</suffix>
             <vTx>7</vTx>
@@ -1762,7 +1762,7 @@ p, li { white-space: pre-wrap; }
             <stepDouble>2</stepDouble>
             <valDouble>0</valDouble>
             <vTxDoubleScale>100</vTxDoubleScale>
-            <suffix> A</suffix>
+            <suffix> A/°</suffix>
             <vTx>7</vTx>
         </brkbooster_current>
         <booster_target_fade>
