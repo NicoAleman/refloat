@@ -1277,15 +1277,18 @@ static void refloat_thd(void *arg) {
             }
 
             // Apply P Brake Scaling
-            float scaled_kp;
+            float kp_scale;
             // Choose appropriate scale based on board angle (this accomodates backwards riding)
             if (d->proportional < 0) {
-                scaled_kp = d->float_conf.kp * d->kp_brake_scale;
+                kp_scale = d->kp_brake_scale;
             } else {
-                scaled_kp = d->float_conf.kp * d->kp_accel_scale;
+                kp_scale = d->kp_accel_scale;
             }
 
-            d->pi = scaled_kp * d->proportional + d->integral; // for debugging
+            // Placed in extra variable for debugging
+            d->pi = (d->proportional * d->float_conf.kp + // Linear Angle P
+                    sign(d->proportional) * pow(d->proportional, 2) * d->float_conf.kp_b) * kp_scale + // Expo Angle P (+ scaling)
+                    d->integral; // Angle I
             float new_pi = d->pi;
             float new_pid_value = 0;
 

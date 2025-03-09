@@ -190,6 +190,7 @@ typedef struct {
 typedef struct {
     bool disabled;
     float kp;
+    float kp_b;
     float ki;
     float kp2;
     float kp2_b;
