@@ -1291,6 +1291,10 @@ static void refloat_thd(void *arg) {
 
             // Only apply Rate P and Booster after the board is centered
             if (d->state.sat != SAT_CENTERING) {
+                float current_limit = fmaxf(d->motor.current_min, d->motor.current_max);
+                float pi_limit = current_limit; // Limit PI to current limit to avoid counter-acting Booster / Rate P too much
+                float booster_limit = current_limit; // Limit Booster to current limit to avoid counter-acting Rate P
+
                 float rate =    (-d->gyro[1] * d->float_conf.kp2) + 
                                 (-sign(d->gyro[1]) * pow(d->gyro[1], 2) * d->float_conf.kp2_b);
                 d->rate_p = (rate > 0 ? d->kp2_accel_scale : d->kp2_brake_scale) * rate;
@@ -1302,15 +1306,15 @@ static void refloat_thd(void *arg) {
                 float true_proportional = d->setpoint - d->atr.braketilt_offset - d->noseangling_interpolated - d->pitch;
                 float abs_proportional = fabsf(true_proportional);
 
-                float booster_kp, booster_angle, booster_ramp_rate;
+                float booster_kp, booster_angle, booster_ramp_up_rate;
                 if (true_proportional < 0) { // Currently does not inverse on direction change, need to implement
                     booster_kp = d->float_conf.brkbooster_current; // conf parameter should be changed to new kp
                     booster_angle = d->float_conf.brkbooster_angle;
-                    booster_ramp_rate = d->float_conf.brkbooster_ramp;
+                    booster_ramp_up_rate = d->float_conf.brkbooster_ramp;
                 } else {
                     booster_kp = d->float_conf.booster_current; // conf parameter should be changed to new kp
                     booster_angle = d->float_conf.booster_angle;
-                    booster_ramp_rate = d->float_conf.booster_ramp;
+                    booster_ramp_up_rate = d->float_conf.booster_ramp;
                 }
 
                 // // Make booster a bit stronger at higher speed (up to 2x stronger when braking)
@@ -1336,7 +1340,7 @@ static void refloat_thd(void *arg) {
 
                     // If PI opposes Booster, phase it out of requested current
                     if (sign(new_pi) != sign(booster_current)) {
-                        target_fade = d->float_conf.booster_target_fade;
+                        target_fade = 1.0;
                     }
                 }
                 
@@ -1347,23 +1351,64 @@ static void refloat_thd(void *arg) {
                 
                 // Apply fade if there is any
                 if (d->booster_fade_factor > 0) {
-                    new_pi *= (1.0 - d->booster_fade_factor);
+                    pi_limit *= (1.0 - d->booster_fade_factor);
                 }
-               
-                if (booster_ramp_rate > 0.0 && // If Booster Rate Limiting is enabled
-                    sign(booster_current) == sign(d->applied_booster_current) && // AND if Booster Target is moving away from zero
+
+                // Limit PI to avoid counter-acting Booster and Rate P too much
+                if (fabsf(new_pi) > pi_limit) {
+                    new_pi = sign(new_pi) * pi_limit;
+                }
+
+                /////////
+
+                // If PI opposes Booster, allow Booster to fully counteract it and reach the current limit.
+                if (sign(new_pi) != sign(booster_current)) {
+                    booster_limit += fabsf(new_pi);
+                } 
+                // If same sign, limit PI such that PI + Booster <= Current Limit
+                else {
+                    float new_pi_limit = fmaxf(0, (current_limit - fabsf(booster_current)));
+                    if (fabsf(new_pi) > new_pi_limit) {
+                        new_pi = sign(new_pi) * new_pi_limit;
+                    }
+                }
+
+                // Limit Booster (as described above)
+                if (fabsf(booster_current) > booster_limit) {
+                    booster_current = sign(booster_current) * booster_limit;
+                }
+
+                // Ramp Booster (May be worth trying a configurable exponential ramp instead of constant rate)
+                float booster_ramp_rate;
+
+                if (sign(booster_current) == sign(d->applied_booster_current) &&
                     fabsf(booster_current) > fabsf(d->applied_booster_current)) {
+                    // Ramping up in same direction
+                    booster_ramp_rate = booster_ramp_up_rate;
+                } else if (sign(booster_current) != sign(d->applied_booster_current) &&
+                           booster_current != 0) {
+                    // Crossing signs - use larger ramp rate
+                    // If either rate is 0, use 0 (immediate changes)
+                    // Otherwise use the larger of the two rates
+                    booster_ramp_rate = (booster_ramp_up_rate == 0 || d->float_conf.booster_ramp_down == 0) ? 
+                        0 : fmaxf(booster_ramp_up_rate, d->float_conf.booster_ramp_down);
+                } else {
+                    // Ramping down (including to zero)
+                    booster_ramp_rate = d->float_conf.booster_ramp_down;
+                }
 
-                    float max_change = booster_ramp_rate / d->float_conf.hertz;
+                float max_change = booster_ramp_rate / d->float_conf.hertz;
 
+                if (max_change > 0) {
                     float change = booster_current - d->applied_booster_current;
                     d->applied_booster_current += fminf(fabsf(change), max_change) * sign(change);
-
                 } else {
-                    // Use original smoothing for all other cases
+                    // Use original smoothing if ramp rate is disabled
                     d->applied_booster_current =
-                        0.01 * booster_current + 0.99 * d->applied_booster_current;
+                        0.005 * booster_current + 0.995 * d->applied_booster_current;
                 }
+
+                /////
                 
                 new_pid_value += d->applied_booster_current;
             }

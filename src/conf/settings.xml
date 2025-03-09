@@ -1657,9 +1657,7 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Degrees over which booster will ramp from 0A to the configured Current when accelerating, starting at Start Angle (i.e. Start Angle of 8° and Ramp Up of 4° means Booster will begin at 8° nose down and strengthen to max current as the board angle approaches 12° nose down from setpoint).&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;*NOTE: Based on True Pitch&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
             <cDefine>CFG_DFLT_BOOSTER_RAMP</cDefine>
             <editorDecimalsDouble>1</editorDecimalsDouble>
             <editorScale>1</editorScale>
@@ -1727,9 +1725,7 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Degrees over which brake-booster will ramp from 0A to the configured Regen Current, starting at Start Angle (i.e. Start Angle of 8° and Ramp Up of 4° means Brake Booster will begin at 8° nose up and strengthen to max current as the board angle approaches 12° nose up from setpoint).&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;*NOTE: Based on True Pitch&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
             <cDefine>CFG_DFLT_BRKBOOSTER_RAMP</cDefine>
             <editorDecimalsDouble>1</editorDecimalsDouble>
             <editorScale>1</editorScale>
@@ -1765,7 +1761,7 @@ p, li { white-space: pre-wrap; }
             <suffix> A/°</suffix>
             <vTx>7</vTx>
         </brkbooster_current>
-        <booster_target_fade>
+        <booster_ramp_down>
             <longName>Booster Target Fade</longName>
             <type>1</type>
             <transmittable>1</transmittable>
@@ -1773,20 +1769,20 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;What % of PI should we target fading to when experiencing Booster Current?&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_BOOSTER_TARGET_FADE</cDefine>
-            <editorDecimalsDouble>0</editorDecimalsDouble>
-            <editorScale>100</editorScale>
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
+            <cDefine>CFG_DFLT_BOOSTER_RAMP_DOWN</cDefine>
+            <editorDecimalsDouble>1</editorDecimalsDouble>
+            <editorScale>1</editorScale>
             <editAsPercentage>0</editAsPercentage>
-            <maxDouble>1</maxDouble>
+            <maxDouble>500</maxDouble>
             <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
-            <stepDouble>10</stepDouble>
-            <valDouble>1</valDouble>
+            <stepDouble>25</stepDouble>
+            <valDouble>75</valDouble>
             <vTxDoubleScale>100</vTxDoubleScale>
-            <suffix> %</suffix>
+            <suffix> A/s</suffix>
             <vTx>7</vTx>
-        </booster_target_fade>
+        </booster_ramp_down>
         <booster_target_fade_alpha>
             <longName>Target Fade EMA Alpha</longName>
             <type>1</type>
@@ -3806,7 +3802,7 @@ p, li { white-space: pre-wrap; }
         <ser>brkbooster_angle</ser>
         <ser>brkbooster_ramp</ser>
         <ser>brkbooster_current</ser>
-        <ser>booster_target_fade</ser>
+        <ser>booster_ramp_down</ser>
         <ser>booster_target_fade_alpha</ser>
         <ser>torquetilt_start_current</ser>
         <ser>torquetilt_angle_limit</ser>
@@ -3924,7 +3920,7 @@ p, li { white-space: pre-wrap; }
                     <param>brkbooster_ramp</param>
                     <param>brkbooster_current</param>
                     <param>::sep::Booster Testing</param>
-                    <param>booster_target_fade</param>
+                    <param>booster_ramp_down</param>
                     <param>booster_target_fade_alpha</param>
                 </subgroupParams>
             </subgroup>
