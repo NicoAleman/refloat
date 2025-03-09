@@ -1335,26 +1335,10 @@ static void refloat_thd(void *arg) {
                 // }
 
                 float booster_current = 0; 
-                float target_fade = 0;
 
                 if ((booster_kp > 0) && (abs_proportional > booster_angle)) {
                     // Apply proportional current based on angle beyond start angle
                     booster_current = booster_kp * (abs_proportional - booster_angle) * sign(true_proportional);
-
-                    // If PI opposes Booster, phase it out of requested current
-                    if (sign(new_pi) != sign(booster_current)) {
-                        target_fade = 1.0;
-                    }
-                }
-                
-                // Avoid harsh changes in PI by smoothing a changed fade factor
-                d->booster_fade_factor = 
-                    d->float_conf.booster_target_fade_alpha * target_fade + 
-                    (1 - d->float_conf.booster_target_fade_alpha) * d->booster_fade_factor;
-                
-                // Apply fade if there is any
-                if (d->booster_fade_factor > 0) {
-                    pi_limit *= (1.0 - d->booster_fade_factor);
                 }
 
                 // Limit PI to avoid counter-acting Booster and Rate P too much
@@ -1388,16 +1372,9 @@ static void refloat_thd(void *arg) {
                     fabsf(booster_current) > fabsf(d->applied_booster_current)) {
                     // Ramping up in same direction
                     booster_ramp_rate = booster_ramp_up_rate;
-                } else if (sign(booster_current) != sign(d->applied_booster_current) &&
-                           booster_current != 0) {
-                    // Crossing signs - use larger ramp rate
-                    // If either rate is 0, use 0 (immediate changes)
-                    // Otherwise use the larger of the two rates
-                    booster_ramp_rate = (booster_ramp_up_rate == 0 || d->float_conf.booster_ramp_down == 0) ? 
-                        0 : fmaxf(booster_ramp_up_rate, d->float_conf.booster_ramp_down);
                 } else {
-                    // Ramping down (including to zero)
-                    booster_ramp_rate = d->float_conf.booster_ramp_down;
+                    // Ramping down or across signs
+                    booster_ramp_rate = 0; // Will use exponential ramp instead
                 }
 
                 float max_change = booster_ramp_rate / d->float_conf.hertz;
@@ -1408,7 +1385,8 @@ static void refloat_thd(void *arg) {
                 } else {
                     // Use original smoothing if ramp rate is disabled
                     d->applied_booster_current =
-                        0.005 * booster_current + 0.995 * d->applied_booster_current;
+                        (d->float_conf.booster_ramp_down_alpha) * booster_current + 
+                        (1 - d->float_conf.booster_ramp_down_alpha) * d->applied_booster_current;
                 }
 
                 /////

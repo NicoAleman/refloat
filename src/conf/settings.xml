@@ -1784,48 +1784,26 @@ p, li { white-space: pre-wrap; }
             <suffix> A/°</suffix>
             <vTx>7</vTx>
         </brkbooster_current>
-        <booster_ramp_down>
-            <longName>Booster Target Fade</longName>
+        <booster_ramp_down_alpha>
+            <longName>Booster Ramp Down Alpha</longName>
             <type>1</type>
             <transmittable>1</transmittable>
             <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_BOOSTER_RAMP_DOWN</cDefine>
-            <editorDecimalsDouble>1</editorDecimalsDouble>
-            <editorScale>1</editorScale>
-            <editAsPercentage>0</editAsPercentage>
-            <maxDouble>500</maxDouble>
-            <minDouble>0</minDouble>
-            <showDisplay>0</showDisplay>
-            <stepDouble>25</stepDouble>
-            <valDouble>75</valDouble>
-            <vTxDoubleScale>100</vTxDoubleScale>
-            <suffix> A/s</suffix>
-            <vTx>7</vTx>
-        </booster_ramp_down>
-        <booster_target_fade_alpha>
-            <longName>Target Fade EMA Alpha</longName>
-            <type>1</type>
-            <transmittable>1</transmittable>
-            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Larger Alpha = Faster ramp to full/null Target Fade (Fades PI)&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Smaller Alpha = More gradual/smooth ramp to full/null Target Fade&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Larger Alpha = Faster ramp off of Booster&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Smaller Alpha = More gradual/smooth ramp off of Booster&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Try smaller if theres a sudden jerk on start or end of Booster. Try larger if PI doesnt kick in fast enough when exiting Booster, or Booster doesn't kick in fast enough (though ramp rate is also a factor)&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Menlo','Monaco','Courier New','monospace'; font-size:12px; color:#9cdcfe;&quot;&gt;d&lt;/span&gt;&lt;span style=&quot; font-family:'Menlo','Monaco','Courier New','monospace'; font-size:12px; color:#cccccc;&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span style=&quot; font-family:'Menlo','Monaco','Courier New','monospace'; font-size:12px; color:#9cdcfe;&quot;&gt;booster_fade_factor&lt;/span&gt;&lt;span style=&quot; font-family:'Menlo','Monaco','Courier New','monospace'; font-size:12px; color:#cccccc;&quot;&gt; &lt;/span&gt;&lt;span style=&quot; font-family:'Menlo','Monaco','Courier New','monospace'; font-size:12px; color:#d4d4d4;&quot;&gt;=&lt;/span&gt;&lt;span style=&quot; font-family:'Menlo','Monaco','Courier New','monospace'; font-size:12px; color:#cccccc;&quot;&gt; &lt;/span&gt;&lt;span style=&quot; font-family:'Menlo','Monaco','Courier New','monospace'; font-size:12px; color:#9cdcfe;&quot;&gt;X&lt;/span&gt;&lt;span style=&quot; font-family:'Menlo','Monaco','Courier New','monospace'; font-size:12px; color:#cccccc;&quot;&gt; &lt;/span&gt;&lt;span style=&quot; font-family:'Menlo','Monaco','Courier New','monospace'; font-size:12px; color:#d4d4d4;&quot;&gt;*&lt;/span&gt;&lt;span style=&quot; font-family:'Menlo','Monaco','Courier New','monospace'; font-size:12px; color:#cccccc;&quot;&gt; &lt;/span&gt;&lt;span style=&quot; font-family:'Menlo','Monaco','Courier New','monospace'; font-size:12px; color:#9cdcfe;&quot;&gt;target_fade&lt;/span&gt;&lt;span style=&quot; font-family:'Menlo','Monaco','Courier New','monospace'; font-size:12px; color:#cccccc;&quot;&gt; &lt;/span&gt;&lt;span style=&quot; font-family:'Menlo','Monaco','Courier New','monospace'; font-size:12px; color:#d4d4d4;&quot;&gt;+&lt;/span&gt;&lt;span style=&quot; font-family:'Menlo','Monaco','Courier New','monospace'; font-size:12px; color:#cccccc;&quot;&gt; (&lt;/span&gt;&lt;span style=&quot; font-family:'Menlo','Monaco','Courier New','monospace'; font-size:12px; color:#b5cea8;&quot;&gt;1&lt;/span&gt;&lt;span style=&quot; font-family:'Menlo','Monaco','Courier New','monospace'; font-size:12px; color:#cccccc;&quot;&gt; &lt;/span&gt;&lt;span style=&quot; font-family:'Menlo','Monaco','Courier New','monospace'; font-size:12px; color:#d4d4d4;&quot;&gt;-&lt;/span&gt;&lt;span style=&quot; font-family:'Menlo','Monaco','Courier New','monospace'; font-size:12px; color:#cccccc;&quot;&gt; &lt;/span&gt;&lt;span style=&quot; font-family:'Menlo','Monaco','Courier New','monospace'; font-size:12px; color:#9cdcfe;&quot;&gt;X&lt;/span&gt;&lt;span style=&quot; font-family:'Menlo','Monaco','Courier New','monospace'; font-size:12px; color:#cccccc;&quot;&gt;) &lt;/span&gt;&lt;span style=&quot; font-family:'Menlo','Monaco','Courier New','monospace'; font-size:12px; color:#d4d4d4;&quot;&gt;*&lt;/span&gt;&lt;span style=&quot; font-family:'Menlo','Monaco','Courier New','monospace'; font-size:12px; color:#cccccc;&quot;&gt; &lt;/span&gt;&lt;span style=&quot; font-family:'Menlo','Monaco','Courier New','monospace'; font-size:12px; color:#9cdcfe;&quot;&gt;d&lt;/span&gt;&lt;span style=&quot; font-family:'Menlo','Monaco','Courier New','monospace'; font-size:12px; color:#cccccc;&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span style=&quot; font-family:'Menlo','Monaco','Courier New','monospace'; font-size:12px; color:#9cdcfe;&quot;&gt;booster_fade_factor&lt;/span&gt;&lt;span style=&quot; font-family:'Menlo','Monaco','Courier New','monospace'; font-size:12px; color:#cccccc;&quot;&gt;;&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Menlo','Monaco','Courier New','monospace'; font-size:12px; color:#cccccc;&quot;&gt;X = Target Fade Alpha&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_BOOSTER_TARGET_FADE_ALPHA</cDefine>
-            <editorDecimalsDouble>3</editorDecimalsDouble>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Menlo','Monaco','Courier New','monospace'; font-size:12px; color:#cccccc;&quot;&gt;X = Booster Ramp Down Alpha&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
+            <cDefine>CFG_DFLT_BOOSTER_RAMP_DOWN_ALPHA</cDefine>
+            <editorDecimalsDouble>4</editorDecimalsDouble>
             <editorScale>1</editorScale>
             <editAsPercentage>0</editAsPercentage>
-            <maxDouble>1</maxDouble>
+            <maxDouble>0.1</maxDouble>
             <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>0.001</stepDouble>
@@ -1833,7 +1811,7 @@ p, li { white-space: pre-wrap; }
             <vTxDoubleScale>10000</vTxDoubleScale>
             <suffix></suffix>
             <vTx>7</vTx>
-        </booster_target_fade_alpha>
+        </booster_ramp_down_alpha>
         <torquetilt_start_current>
             <longName>Start Current Threshold</longName>
             <type>1</type>
@@ -3826,8 +3804,7 @@ p, li { white-space: pre-wrap; }
         <ser>brkbooster_angle</ser>
         <ser>brkbooster_ramp</ser>
         <ser>brkbooster_current</ser>
-        <ser>booster_ramp_down</ser>
-        <ser>booster_target_fade_alpha</ser>
+        <ser>booster_ramp_down_alpha</ser>
         <ser>torquetilt_start_current</ser>
         <ser>torquetilt_angle_limit</ser>
         <ser>torquetilt_on_speed</ser>
@@ -3945,8 +3922,7 @@ p, li { white-space: pre-wrap; }
                     <param>brkbooster_ramp</param>
                     <param>brkbooster_current</param>
                     <param>::sep::Booster Testing</param>
-                    <param>booster_ramp_down</param>
-                    <param>booster_target_fade_alpha</param>
+                    <param>booster_ramp_down_alpha</param>
                 </subgroupParams>
             </subgroup>
             <subgroup>
