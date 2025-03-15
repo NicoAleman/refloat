@@ -194,6 +194,7 @@ typedef struct {
     float ki;
     float kp2;
     float kp2_b;
+    bool kp2_derotated;
     float mahony_kp;
     float mahony_kp_roll;
     float kp_brake;

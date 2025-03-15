@@ -3420,7 +3420,7 @@ Item {
                             clip: true
 
                             RealValue {id: debugRequestedCurrent; label: "Requested current"; unit: "A";}
-                            RealValue {id: debugFilteredCurrent; label: "Torque (filt. current)"; unit: "A";}
+                            RealValue {id: debugFilteredCurrent; label: "Gyro Y"; unit: "°/s";}
                             RealValue {id: debugAtrAccDiff; label: "ATR Accel. diff.";}
                             Value {id: debugAtrSpeedBoost; label: "ATR Speed Boost"; unit: "%"; value: "0"}
                             RealValue {id: debugBoosterCurrent; label: "Booster current"; unit: "A";}

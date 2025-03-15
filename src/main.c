@@ -1070,7 +1070,11 @@ static void refloat_thd(void *arg) {
             }
         }
 
-        VESC_IF->imu_get_gyro(d->gyro);
+        if (d->float_conf.kp2_derotated) {
+            VESC_IF->imu_get_gyro_derotated(d->gyro);
+        } else {
+            VESC_IF->imu_get_gyro(d->gyro);
+        }
 
         motor_data_update(&d->motor);
 
@@ -2373,7 +2377,7 @@ static void send_realtime_data2(data *d) {
 
         // DEBUG
         buffer_append_float32_auto(buffer, d->pid_value, &ind);
-        buffer_append_float32_auto(buffer, d->motor.atr_filtered_current, &ind);
+        buffer_append_float32_auto(buffer, d->gyro[1], &ind);
         buffer_append_float32_auto(buffer, d->atr.accel_diff, &ind);
         buffer_append_float32_auto(buffer, d->atr.speed_boost, &ind);
         buffer_append_float32_auto(buffer, d->applied_booster_current, &ind);
