@@ -66,7 +66,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;For our use case, while Rate P is a Proportional value, we utilize it practically as the D (Derivative) component for our PID loop, working as a damper for the Angle P component.&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-weight:600; text-decoration: underline;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Recommended Values: 0.6 - 1.0&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;(Above 1.0 is possible, but may experience negative side effects such as vibrations, especially in low speed turns. Increment 0.1 at a time.)&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;(Above 1.0 is possible, but you may experience negative side effects such as vibrations, especially in low speed turns. Increment 0.1 at a time.)&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-style:italic;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;*Note: Angle P and Rate P work together to shape a large part of the ride feel. If trying to soften the effects of both and you would like to maintain the ride feel, these values should be adjusted together by the same proportion (i.e. If reducing Angle P by half, such as from 20 -&amp;gt; 10, Rate P should be reduced by half as well, such as from 0.8 -&amp;gt; 0.4).&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
             <cDefine>CFG_DFLT_KP2</cDefine>
@@ -122,7 +122,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-weight:600; text-decoration: underline;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;In practice, increasing this value will loosen up the board, specifically in the center of the board and in how quickly it rebounds to level. If you want a snappier board, drop this down a bit. If you want things a bit looser, with increased board angle control, bump it up a notch or two.&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Technically, this value affects how the board behaves when experiencing acceleration. WIth a higher value, harder acceleration will make the nose softer, and harder deceleration/braking will make the tail softer.&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Technically, this value affects how the board behaves when experiencing acceleration. With a higher value, harder acceleration will make the nose softer, and harder deceleration/braking will make the tail softer.&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;This parameter is amongst those that have the most impact on the feel of the ride and how the board behaves in ondulated terrain.&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
@@ -132,7 +132,7 @@ p, li { white-space: pre-wrap; }
             <editorScale>1</editorScale>
             <editAsPercentage>0</editAsPercentage>
             <maxDouble>3</maxDouble>
-            <minDouble>0.02</minDouble>
+            <minDouble>0.2</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>0.1</stepDouble>
             <valDouble>2</valDouble>
@@ -881,7 +881,7 @@ p, li { white-space: pre-wrap; }
             <minInt>300</minInt>
             <showDisplay>0</showDisplay>
             <stepInt>20</stepInt>
-            <valInt>400</valInt>
+            <valInt>495</valInt>
             <suffix> Hz</suffix>
             <vTx>3</vTx>
         </haptic.duty.frequency>
@@ -929,7 +929,7 @@ p, li { white-space: pre-wrap; }
             <minInt>300</minInt>
             <showDisplay>0</showDisplay>
             <stepInt>20</stepInt>
-            <valInt>500</valInt>
+            <valInt>550</valInt>
             <suffix> Hz</suffix>
             <vTx>3</vTx>
         </haptic.error.frequency>
@@ -1837,7 +1837,7 @@ p, li { white-space: pre-wrap; }
             <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
             <stepDouble>0.1</stepDouble>
-            <valDouble>1</valDouble>
+            <valDouble>0.5</valDouble>
             <vTxDoubleScale>1000</vTxDoubleScale>
             <suffix></suffix>
             <vTx>7</vTx>
