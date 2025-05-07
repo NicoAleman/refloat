@@ -124,6 +124,7 @@ typedef struct {
     float pitch, roll;
     float balance_pitch;
     float gyro[3];
+    float gyro_y;
 
     float throttle_val;
     float max_duty_with_margin;
@@ -1039,8 +1040,10 @@ static void refloat_thd(void *arg) {
 
         d->current_time = VESC_IF->system_time();
 
+        float roll_rad = VESC_IF->imu_get_roll();
+
         d->pitch = rad2deg(VESC_IF->imu_get_pitch());
-        d->roll = rad2deg(VESC_IF->imu_get_roll());
+        d->roll = rad2deg(roll_rad);
         d->balance_pitch = rad2deg(balance_filter_get_pitch(&d->balance_filter));
 
         // Darkride:
@@ -1070,11 +1073,11 @@ static void refloat_thd(void *arg) {
             }
         }
 
-        if (d->float_conf.kp2_derotated) {
-            VESC_IF->imu_get_gyro_derotated(d->gyro);
-        } else {
-            VESC_IF->imu_get_gyro(d->gyro);
-        }
+        VESC_IF->imu_get_gyro(d->gyro);
+
+        d->gyro_y = d->float_conf.kp2_derotated 
+                    ? cosf(roll_rad) * d->gyro[1] + sinf(roll_rad) * d->gyro[2] 
+                    : d->gyro[1];
 
         motor_data_update(&d->motor);
 
@@ -1302,8 +1305,8 @@ static void refloat_thd(void *arg) {
                 float pi_limit = current_limit; // Limit PI to current limit to avoid counter-acting Booster / Rate P too much
                 float booster_limit = current_limit; // Limit Booster to current limit to avoid counter-acting Rate P
 
-                float rate =    (-d->gyro[1] * d->float_conf.kp2) + 
-                                (-sign(d->gyro[1]) * pow(d->gyro[1], 2) * d->float_conf.kp2_b);
+                float rate =    (-d->gyro_y * d->float_conf.kp2) + 
+                                (-sign(d->gyro_y) * pow(d->gyro_y, 2) * d->float_conf.kp2_b);
                 d->rate_p = (rate > 0 ? d->kp2_accel_scale : d->kp2_brake_scale) * rate;
                 new_pid_value += d->rate_p;
 
@@ -2377,7 +2380,7 @@ static void send_realtime_data2(data *d) {
 
         // DEBUG
         buffer_append_float32_auto(buffer, d->pid_value, &ind);
-        buffer_append_float32_auto(buffer, d->gyro[1], &ind);
+        buffer_append_float32_auto(buffer, d->gyro_y, &ind);
         buffer_append_float32_auto(buffer, d->atr.accel_diff, &ind);
         buffer_append_float32_auto(buffer, d->atr.speed_boost, &ind);
         buffer_append_float32_auto(buffer, d->applied_booster_current, &ind);
