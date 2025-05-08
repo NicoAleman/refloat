@@ -27,6 +27,8 @@ void imu_init(IMU *imu) {
     imu->roll = 0.0f;
     imu->yaw = 0.0f;
     imu->gyro_y = 0.0f;
+    imu->orig_gyro_y = 0.0f;
+    imu->dan_gyro_y = 0.0f;
 
     imu->flywheel_pitch_offset = 0.0f;
     imu->flywheel_roll_offset = 0.0f;
@@ -34,7 +36,7 @@ void imu_init(IMU *imu) {
 
 void imu_update(IMU *imu, const BalanceFilterData *bf, const State *state) {
     float roll_rad = VESC_IF->imu_get_roll();
-    
+
     imu->pitch = rad2deg(VESC_IF->imu_get_pitch());
     imu->roll = rad2deg(roll_rad);
     imu->yaw = rad2deg(VESC_IF->imu_get_yaw());
@@ -42,8 +44,11 @@ void imu_update(IMU *imu, const BalanceFilterData *bf, const State *state) {
 
     float gyro[3];
     VESC_IF->imu_get_gyro(gyro);
-    
+
+    imu->orig_gyro_y = gyro[1];
     imu->gyro_y = cosf(roll_rad) * gyro[1] + sinf(roll_rad) * gyro[2];
+    imu->dan_gyro_y =
+        (1 - sinf(roll_rad) * sinf(roll_rad)) * gyro[1] + sinf(roll_rad) * cosf(roll_rad) * gyro[2];
 
     if (state->mode == MODE_FLYWHEEL) {
         imu->pitch = imu->flywheel_pitch_offset - imu->pitch;
