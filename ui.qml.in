@@ -2074,11 +2074,19 @@ Item {
 
             positiveRatio = clamp(newRatio, 0.15, 0.85);
 
+            var myScale = 1;
+            var srs = series;
+
             var setScale = function(i, s) {
                 if (s != scales[i]) {
                     scalesUpdate();
                 }
-                scales[i] = s;
+                if (["imu.gyro_y", "imu.orig_gyro_y", "imu.dan_gyro_y"].includes(srs[i].name)) {
+                    myScale = Math.min(myScale, s);
+                    scales[i] = myScale;
+                } else {
+                    scales[i] = s;
+                }
             }
 
             var newScale;
