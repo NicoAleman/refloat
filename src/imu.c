@@ -55,21 +55,9 @@ void imu_update(IMU *imu, const BalanceFilterData *bf, const State *state) {
     imu->nico_old_gyro_y = cos_roll * gyro[1] + sin_roll * gyro[2];
     imu->michal_gyro_y = cos_roll * cos_roll * gyro[1] + sin_roll * cos_roll * gyro[2];
 
-    // Normalize to start of pattern
-    float x_shifted = roll_rad + M_PI_4;
-
-    // Local x in the [-π/4, π/4] range
-    float x_local = fmodf(x_shifted, M_PI_2);
-    if (x_local < 0) x_local += M_PI_2;
-    x_local -= M_PI_4;
-
-
-    // Determine if we should mirror this segment
-    int period = (int)floorf(x_shifted / M_PI_2);
-    float x_mirrored = (period & 1) ? -x_local : x_local;
-
-    float gyro1_weight = cosf(x_local);       // Looped cosine
-    float gyro2_weight = sinf(x_mirrored);    // Looped & mirrored sine
+    // Michal's method, but mirrored past 45deg
+    float gyro1_weight = 0.5 + fabsf(cos_roll*cos_roll - 0.5);
+    float gyro2_weight = sin_roll * cos_roll;
 
     imu->gyro_y = gyro1_weight * gyro[1] + gyro2_weight * gyro[2];
 
