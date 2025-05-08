@@ -51,7 +51,7 @@
     S(imu.roll)                                                                                    \
     S(imu.gyro_y)                                                                                  \
     S(imu.orig_gyro_y)                                                                             \
-    S(imu.dan_gyro_y)                                                                              \
+    S(imu.nico_gyro_y)                                                                              \
     S(footpad.adc1)                                                                                \
     S(footpad.adc2)                                                                                \
     S(remote.input)
