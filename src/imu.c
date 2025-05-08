@@ -21,6 +21,8 @@
 
 #include "vesc_c_if.h"
 
+#include <math.h>
+
 void imu_init(IMU *imu) {
     imu->pitch = 0.0f;
     imu->balance_pitch = 0.0f;
@@ -28,7 +30,8 @@ void imu_init(IMU *imu) {
     imu->yaw = 0.0f;
     imu->gyro_y = 0.0f;
     imu->orig_gyro_y = 0.0f;
-    imu->nico_gyro_y = 0.0f;
+    imu->michal_gyro_y = 0.0f;
+    imu->nico_old_gyro_y = 0.0f;
 
     imu->flywheel_pitch_offset = 0.0f;
     imu->flywheel_roll_offset = 0.0f;
@@ -49,9 +52,27 @@ void imu_update(IMU *imu, const BalanceFilterData *bf, const State *state) {
     float cos_roll = cosf(roll_rad);
 
     imu->orig_gyro_y = gyro[1];
-    imu->nico_gyro_y = cos_roll * gyro[1] + sin_roll * gyro[2];
-    imu->gyro_y =
-        cos_roll * cos_roll * gyro[1] + sin_roll * cos_roll * gyro[2];
+    imu->nico_old_gyro_y = cos_roll * gyro[1] + sin_roll * gyro[2];
+    imu->michal_gyro_y = cos_roll * cos_roll * gyro[1] + sin_roll * cos_roll * gyro[2];
+
+    // Normalize to start of pattern
+    float x_shifted = roll_rad + M_PI_4;
+
+    // Local x in the [-π/4, π/4] range
+    float x_local = fmodf(x_shifted, M_PI_2);
+    if (x_local < 0) x_local += M_PI_2;
+    x_local -= M_PI_4;
+
+
+    // Determine if we should mirror this segment
+    int period = (int)floorf(x_shifted / M_PI_2);
+    float x_mirrored = (period & 1) ? -x_local : x_local;
+
+    float gyro1_weight = cosf(x_local);       // Looped cosine
+    float gyro2_weight = sinf(x_mirrored);    // Looped & mirrored sine
+
+    imu->gyro_y = gyro1_weight * gyro[1] + gyro2_weight * gyro[2];
+
 
     if (state->mode == MODE_FLYWHEEL) {
         imu->pitch = imu->flywheel_pitch_offset - imu->pitch;

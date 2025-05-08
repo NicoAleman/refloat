@@ -2081,7 +2081,7 @@ Item {
                 if (s != scales[i]) {
                     scalesUpdate();
                 }
-                if (["imu.gyro_y", "imu.orig_gyro_y", "imu.nico_gyro_y"].includes(srs[i].name)) {
+                if (["imu.gyro_y", "imu.orig_gyro_y", "imu.michal_gyro_y", "imu_nico_old_gyro_y"].includes(srs[i].name)) {
                     myScale = Math.min(myScale, s);
                     scales[i] = myScale;
                 } else {

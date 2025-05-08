@@ -27,7 +27,8 @@ typedef struct {
     float yaw;
     float gyro_y;
     float orig_gyro_y;
-    float nico_gyro_y;
+    float michal_gyro_y;
+    float nico_old_gyro_y;
 
     float flywheel_pitch_offset;
     float flywheel_roll_offset;
