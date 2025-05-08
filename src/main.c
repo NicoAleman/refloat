@@ -1075,9 +1075,18 @@ static void refloat_thd(void *arg) {
 
         VESC_IF->imu_get_gyro(d->gyro);
 
-        d->gyro_y = d->float_conf.kp2_derotated 
-                    ? cosf(roll_rad) * d->gyro[1] + sinf(roll_rad) * d->gyro[2] 
-                    : d->gyro[1];
+        if (d->float_conf.kp2_derotated) {
+            float sin_roll = sinf(roll_rad);
+            float cos_roll = cosf(roll_rad);
+
+            // Michal's method, but mirrored past 45deg
+            float gyro1_weight = 0.5 + fabsf(cos_roll*cos_roll - 0.5);
+            float gyro2_weight = sin_roll * cos_roll;
+
+            d->gyro_y = gyro1_weight * d->gyro[1] + gyro2_weight * d->gyro[2];
+        } else {
+            d->gyro_y = d->gyro[1];
+        }
 
         motor_data_update(&d->motor);
 
