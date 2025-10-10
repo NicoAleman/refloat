@@ -56,8 +56,9 @@
 #define RT_DATA_RUNTIME_ITEMS(S, R)                                                                \
     R(setpoint)                                                                                    \
     R(atr.setpoint)                                                                                \
-    S(brake_tilt.setpoint)                                                                         \
+    S(atr.target)                                                                                  \
     R(torque_tilt.setpoint)                                                                        \
+    S(torque_tilt.target)                                                                          \
     S(turn_tilt.setpoint)                                                                          \
     S(remote.setpoint)                                                                             \
     R(balance_current)                                                                             \

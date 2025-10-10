@@ -1289,8 +1289,9 @@ static void send_realtime_data(Data *d) {
     // Setpoints
     buffer_append_float32_auto(buffer, d->setpoint, &ind);
     buffer_append_float32_auto(buffer, d->atr.setpoint, &ind);
-    buffer_append_float32_auto(buffer, d->brake_tilt.setpoint, &ind);
+    buffer_append_float32_auto(buffer, d->atr.target, &ind);
     buffer_append_float32_auto(buffer, d->torque_tilt.setpoint, &ind);
+    buffer_append_float32_auto(buffer, d->torque_tilt.target, &ind);
     buffer_append_float32_auto(buffer, d->turn_tilt.setpoint, &ind);
     buffer_append_float32_auto(buffer, d->remote.setpoint, &ind);
 

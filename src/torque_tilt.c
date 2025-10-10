@@ -31,6 +31,7 @@ void torque_tilt_init(TorqueTilt *tt) {
 void torque_tilt_reset(TorqueTilt *tt) {
     tt->ramped_step_size = 0.0f;
     tt->setpoint = 0.0f;
+    tt->target = 0.0f;
 }
 
 void torque_tilt_configure(TorqueTilt *tt, const RefloatConfig *config) {
@@ -47,7 +48,7 @@ void torque_tilt_update(TorqueTilt *tt, const MotorData *motor, const RefloatCon
     // multiply it by "power" to get our desired angle, and min with the limit
     // to respect boundaries. Finally multiply it by motor current sign to get
     // directionality back.
-    float target =
+    tt->target =
         fminf(
             fmaxf((fabsf(motor->filt_current) - config->torquetilt_start_current), 0) * strength,
             config->torquetilt_angle_limit
@@ -55,11 +56,10 @@ void torque_tilt_update(TorqueTilt *tt, const MotorData *motor, const RefloatCon
         sign(motor->filt_current);
 
     float step_size = 0;
-    if (tt->setpoint * target < 0) {
-        // Moving towards opposite sign (crossing zero);
-        // Use the faster tilt speed until 0 is reached
+    if (tt->setpoint * tt->target < 0) {
+        // Moving towards opposite sign (crossing zero) - use the faster tilt speed until 0 is reached
         step_size = fmaxf(tt->off_step_size, tt->on_step_size);
-    } else if (fabsf(tt->setpoint) > fabsf(target)) {
+    } else if (fabsf(tt->setpoint) > fabsf(tt->target)) {
         // Moving towards smaller angle of same sign or zero
         step_size = tt->off_step_size;
     } else {
@@ -72,7 +72,7 @@ void torque_tilt_update(TorqueTilt *tt, const MotorData *motor, const RefloatCon
     }
 
     // Smoothen changes in tilt angle by ramping the step size
-    smooth_rampf(&tt->setpoint, &tt->ramped_step_size, target, step_size, 0.04, 1.5);
+    smooth_rampf(&tt->setpoint, &tt->ramped_step_size, tt->target, step_size, 0.04, 1.5);
 }
 
 void torque_tilt_winddown(TorqueTilt *tt) {

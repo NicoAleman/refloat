@@ -27,6 +27,7 @@ typedef struct {
 
     float ramped_step_size;
     float setpoint;
+    float target;
 } TorqueTilt;
 
 void torque_tilt_init(TorqueTilt *tt);

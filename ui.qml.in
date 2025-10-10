@@ -1746,8 +1746,9 @@ Item {
         ["imu.balance_pitch", {"name": "Balance Pitch", "color": "#53b3bf", "visible": true}],
 
         ["torque_tilt.setpoint", {"name": "Torque Tilt Setpoint", "color": "#df4a98", "visible": true}],
+        ["torque_tilt.target", {"name": "Torque Tilt Target", "color": "#69aad7", "visible": true}],
         ["atr.setpoint", {"name": "ATR Setpoint", "color": "#7640d6", "visible": true}],
-        ["brake_tilt.setpoint", {"name": "Brake Tilt Setpoint", "color": "#b29ad7", "visible": false}],
+        ["atr.target", {"name": "ATR Target", "color": "#4a8772", "visible": false}],
         ["turn_tilt.setpoint", {"name": "Turn Tilt Setpoint", "color": "#e095af", "visible": false}],
         ["remote.setpoint", {"name": "Remote Setpoint", "color": "#803a4d", "visible": false}],
         ["setpoint", {"name": "Setpoint", "color": "#e57e20", "visible": true}],
@@ -6729,8 +6730,9 @@ Item {
                                 clip: true
 
                                 Value {label: "ATR setpoint"; unit: "°"; value: toFixed2Zero(state.rtData["atr.setpoint"]);}
-                                Value {label: "Brake Tilt setpoint"; unit: "°"; value: toFixed2Zero(state.rtData["brake_tilt.setpoint"]);}
+                                Value {label: "ATR target"; unit: "°"; value: toFixed2Zero(state.rtData["atr.target"]);}
                                 Value {label: "Torque Tilt setpoint"; unit: "°"; value: toFixed2Zero(state.rtData["torque_tilt.setpoint"]);}
+                                Value {label: "Torque Tilt target"; unit: "°"; value: toFixed2Zero(state.rtData["torque_tilt.target"]);}
                                 Value {label: "Turn Tilt setpoint"; unit: "°"; value: toFixed2Zero(state.rtData["turn_tilt.setpoint"]);}
                                 Value {label: "Remote Tilt setpoint"; unit: "°"; value: toFixed2Zero(state.rtData["remote.setpoint"]);}
                             }
