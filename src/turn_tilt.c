@@ -125,3 +125,7 @@ void turn_tilt_update(TurnTilt *tt, const MotorData *md, const RefloatConfig *co
     // Smoothen changes in tilt angle by ramping the step size
     smooth_rampf(&tt->setpoint, &tt->ramped_step_size, tt->target, tt->step_size, 0.04, 1.5);
 }
+
+void turn_tilt_winddown(TurnTilt *tt) {
+    tt->setpoint *= 0.995;
+}

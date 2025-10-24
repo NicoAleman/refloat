@@ -45,3 +45,5 @@ void turn_tilt_configure(TurnTilt *tt, const RefloatConfig *config);
 void turn_tilt_aggregate(TurnTilt *tt, const IMU *imu);
 
 void turn_tilt_update(TurnTilt *tt, const MotorData *md, const RefloatConfig *config);
+
+void turn_tilt_winddown(TurnTilt *tt);
