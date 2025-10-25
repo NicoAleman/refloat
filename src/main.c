@@ -555,7 +555,7 @@ static void calculate_setpoint_target(Data *d) {
                sign(d->motor.acceleration) == d->motor.erpm_sign && d->motor.duty_cycle > 0.3 &&
                // acceleration can jump a lot at very low speeds
                d->motor.abs_erpm > 2000) {
-        d->state.wheelslip = true;
+        d->state.wheelslip = true; //
         d->state.sat = SAT_NONE;
         timer_refresh(&d->time, &d->wheelslip_timer);
         if (d->state.darkride) {
@@ -880,10 +880,13 @@ static void refloat_thd(void *arg) {
             d->setpoint += d->remote.setpoint;
 
             if (!d->state.darkride) {
+                // Manage wheelslip recovery state for ATR
+                atr_manage_wheelslip_recovery(&d->atr, &d->time, d->state.wheelslip, d->dt);
+
                 // in case of wheelslip, don't change torque tilts, instead slightly decrease each
                 // cycle
                 if (d->state.wheelslip) {
-                    turn_tilt_winddown(&d->turn_tilt);
+                    turn_tilt_winddown(&d->turn_tilt); //
                     torque_tilt_winddown(&d->torque_tilt);
                     atr_winddown(&d->atr);
                     brake_tilt_winddown(&d->brake_tilt);

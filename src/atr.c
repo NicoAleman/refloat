@@ -26,6 +26,7 @@ void atr_init(ATR *atr) {
     atr->on_step_size = 0.0f;
     atr->off_step_size = 0.0f;
     atr->speed_boost_mult = 0.0f;
+    atr->recovery_step_size = 0.0f;
     atr_reset(atr);
 }
 
@@ -36,6 +37,11 @@ void atr_reset(ATR *atr) {
     atr->target = 0.0f;
     atr->ramped_step_size = 0.0f;
     atr->setpoint = 0.0f;
+
+    atr->wheelslip_accumulator = 0.0f;
+    atr->wheelslip_end_timer = 0;
+    atr->in_recovery_mode = false;
+    atr->should_start_recovery = false;
 }
 
 void atr_configure(ATR *atr, const RefloatConfig *config) {
@@ -47,6 +53,49 @@ void atr_configure(ATR *atr, const RefloatConfig *config) {
         // above 0.4 we add 500erpm for each extra 10% of speed boost, so at
         // most +6000 for 100% speed boost
         atr->speed_boost_mult = 1.0f / ((fabsf(config->atr_speed_boost) - 0.4f) * 5000 + 3000.0f);
+    }
+
+    // Calculate step size for 4 deg/s recovery mode
+    atr->recovery_step_size = 4.0f / config->hertz;
+}
+
+void atr_manage_wheelslip_recovery(ATR *atr, const Time *time, bool wheelslip, float dt) {
+    const float WHEELSLIP_ACCUMULATOR_MAX = 0.35f;  // 350ms
+    const float RECOVERY_DURATION = 0.5f;  // 500ms
+
+    if (wheelslip) {
+        // If we were in recovery mode, we need to restart recovery when wheelslip ends
+        if (atr->in_recovery_mode) {
+            atr->in_recovery_mode = false;
+            atr->should_start_recovery = true;
+        }
+        
+        // Accumulate wheelslip time, max at 350ms
+        atr->wheelslip_accumulator = fminf(atr->wheelslip_accumulator + dt, WHEELSLIP_ACCUMULATOR_MAX);
+        
+        // If accumulator reaches 350ms, prepare to start recovery when wheelslip ends
+        if (atr->wheelslip_accumulator >= WHEELSLIP_ACCUMULATOR_MAX) {
+            atr->should_start_recovery = true;
+        }
+    } else {
+        // Not in wheelslip - deaccumulate at same rate
+        if (atr->wheelslip_accumulator > 0.0f) {
+            atr->wheelslip_accumulator = fmaxf(atr->wheelslip_accumulator - dt, 0.0f);
+        }
+        
+        // If we should start recovery, do so now that wheelslip has ended
+        if (atr->should_start_recovery && !atr->in_recovery_mode) {
+            atr->in_recovery_mode = true;
+            atr->should_start_recovery = false;
+            timer_refresh(time, &atr->wheelslip_end_timer);
+        }
+        
+        // Manage recovery mode timer (500ms after wheelslip ends)
+        if (atr->in_recovery_mode) {
+            if (timer_older(time, atr->wheelslip_end_timer, RECOVERY_DURATION)) {
+                atr->in_recovery_mode = false;
+            }
+        }
     }
 }
 
@@ -173,6 +222,12 @@ void atr_update(ATR *atr, const MotorData *motor, const RefloatConfig *config) {
 
     if (motor->abs_erpm < 500) {
         atr_step_size /= 2;
+    }
+
+    // Apply wheelslip recovery mode limiting (only when setpoint rising toward target)
+    if (atr->in_recovery_mode && (forward ? (atr->target > atr->setpoint) : (atr->target < atr->setpoint))) {
+        // Limit step size to recovery rate (4 deg/s) or actual step size, whichever is smaller
+        atr_step_size = fminf(atr_step_size, atr->recovery_step_size);
     }
 
     // Smoothen changes in tilt angle by ramping the step size
