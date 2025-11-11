@@ -62,6 +62,7 @@
     R(torque_tilt.setpoint.value, "torque_tilt.setpoint")                                          \
     S(turn_tilt.setpoint.value, "turn_tilt.setpoint")                                              \
     S(remote.setpoint.value, "remote.setpoint")                                                    \
+    S(balance_filter.kp_pitch, "balance_filter.kp_pitch")                                          \
     R(balance_current.value, "balance_current")                                                    \
     S(atr.accel_diff, "atr.accel_diff")                                                            \
     S(atr.speed_boost, "atr.speed_boost")                                                          \
