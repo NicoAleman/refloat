@@ -68,9 +68,32 @@ void balance_filter_configure(BalanceFilterData *data, const RefloatConfig *conf
     // negligible effect on balancing and the middle value should skew the
     // filter the least.
     data->kp_yaw = (config->mahony_kp + config->mahony_kp_roll) / 2.0f;
+
+    data->start_kp_pitch = config->mahony_kp;
+    data->end_kp_pitch = config->dynamic_mahony_kp;
+    data->dynamic_kp_erpm_start = config->dynamic_mahony_kp_start_erpm;
+    data->dynamic_kp_erpm_end = config->dynamic_mahony_kp_end_erpm;
 }
 
-void balance_filter_update(BalanceFilterData *data, float *gyro_xyz, float *accel_xyz, float dt) {
+void balance_filter_update(
+    BalanceFilterData *data, const MotorData *motor, float *gyro_xyz, float *accel_xyz, float dt
+) {
+    // Linear interpolation from start_kp_pitch to end_kp_pitch based on abs_erpm
+    if (data->end_kp_pitch > 0 && data->dynamic_kp_erpm_end > data->dynamic_kp_erpm_start) {
+        if (motor->abs_erpm < data->dynamic_kp_erpm_start) {
+            data->kp_pitch = data->start_kp_pitch;
+        } else if (motor->abs_erpm < data->dynamic_kp_erpm_end) {
+            float erpm_ratio = (motor->abs_erpm - data->dynamic_kp_erpm_start) /
+                (data->dynamic_kp_erpm_end - data->dynamic_kp_erpm_start);
+            data->kp_pitch =
+                data->start_kp_pitch + (data->end_kp_pitch - data->start_kp_pitch) * erpm_ratio;
+        } else {
+            data->kp_pitch = data->end_kp_pitch;
+        }
+    } else {
+        data->kp_pitch = data->start_kp_pitch;
+    }
+
     float gx = gyro_xyz[0];
     float gy = gyro_xyz[1];
     float gz = gyro_xyz[2];

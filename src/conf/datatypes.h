@@ -243,6 +243,9 @@ typedef struct {
     float kp2;
     float mahony_kp;
     float mahony_kp_roll;
+    float dynamic_mahony_kp;
+    float dynamic_mahony_kp_start_erpm;
+    float dynamic_mahony_kp_end_erpm;
     float kp_brake;
     float kp2_brake;
     float fault_pitch;
