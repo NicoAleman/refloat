@@ -762,7 +762,7 @@ static void imu_ref_callback(float *acc, float *gyro, float *mag, float dt) {
     unused(mag);
 
     Data *d = (Data *) ARG;
-    balance_filter_update(&d->balance_filter, gyro, acc, dt);
+    balance_filter_update(&d->balance_filter, &d->motor, gyro, acc, dt);
 }
 
 static void refloat_thd(void *arg) {
@@ -1295,6 +1295,8 @@ static void send_realtime_data(Data *d) {
     buffer_append_float32_auto(buffer, d->torque_tilt.target, &ind);
     buffer_append_float32_auto(buffer, d->turn_tilt.setpoint, &ind);
     buffer_append_float32_auto(buffer, d->remote.setpoint, &ind);
+
+    buffer_append_float32_auto(buffer, d->balance_filter.kp_pitch, &ind);
 
     // DEBUG
     buffer_append_float32_auto(buffer, d->imu.pitch, &ind);

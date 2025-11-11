@@ -1753,6 +1753,8 @@ Item {
         ["remote.setpoint", {"name": "Remote Setpoint", "color": "#803a4d", "visible": false}],
         ["setpoint", {"name": "Setpoint", "color": "#e57e20", "visible": true}],
 
+        ["balance_filter.kp_pitch", {"name": "Pitch KP", "color": "#69aad7", "visible": false}],
+
         ["motor.speed", {"name": "Speed", "color": "#3f9469", "visible": false}],
         ["motor.batt_voltage", {"name": "Battery Voltage", "color": "#6e6ee0", "visible": false}],
         ["motor.batt_current", {"name": "Battery Current", "color": "#cf44cd", "visible": false}],
@@ -6735,6 +6737,7 @@ Item {
                                 Value {label: "Torque Tilt target"; unit: "°"; value: toFixed2Zero(state.rtData["torque_tilt.target"]);}
                                 Value {label: "Turn Tilt setpoint"; unit: "°"; value: toFixed2Zero(state.rtData["turn_tilt.setpoint"]);}
                                 Value {label: "Remote Tilt setpoint"; unit: "°"; value: toFixed2Zero(state.rtData["remote.setpoint"]);}
+                                Value {label: "Pitch KP"; unit: ""; value: toFixed2Zero(state.rtData["balance_filter.kp_pitch"]);}
                             }
                         }
 

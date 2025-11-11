@@ -19,6 +19,7 @@
 #define BALANCE_FILTER_h
 
 #include "conf/datatypes.h"
+#include "motor_data.h"
 
 typedef struct {
     float q0;
@@ -31,13 +32,18 @@ typedef struct {
     float kp_pitch;
     float kp_roll;
     float kp_yaw;
+
+    float start_kp_pitch;
+    float end_kp_pitch;
+    float dynamic_kp_erpm_start;
+    float dynamic_kp_erpm_end;
 } BalanceFilterData;
 
 void balance_filter_init(BalanceFilterData *data);
 
 void balance_filter_configure(BalanceFilterData *data, const RefloatConfig *config);
 
-void balance_filter_update(BalanceFilterData *data, float *gyro_xyz, float *accel_xyz, float dt);
+void balance_filter_update(BalanceFilterData *data, const MotorData *motor, float *gyro_xyz, float *accel_xyz, float dt);
 
 float balance_filter_get_roll(const BalanceFilterData *data);
 float balance_filter_get_pitch(const BalanceFilterData *data);

@@ -61,6 +61,7 @@
     S(torque_tilt.target)                                                                          \
     S(turn_tilt.setpoint)                                                                          \
     S(remote.setpoint)                                                                             \
+    S(balance_filter.kp_pitch)                                                                     \
     R(balance_current)                                                                             \
     S(atr.accel_diff)                                                                              \
     S(atr.speed_boost)                                                                             \
