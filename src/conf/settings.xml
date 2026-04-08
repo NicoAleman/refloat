@@ -2760,6 +2760,28 @@ p, li { white-space: pre-wrap; }
             <suffix> </suffix>
             <vTx>7</vTx>
         </turntilt_strength>
+        <turntilt_roll_strength>
+            <longName>Roll Strength</longName>
+            <type>1</type>
+            <transmittable>1</transmittable>
+            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;How much Tiltback should be applied based on Roll Angle and speed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
+            <cDefine>CFG_DFLT_TURNTILT_ROLL_STRENGTH</cDefine>
+            <editorDecimalsDouble>1</editorDecimalsDouble>
+            <editorScale>1</editorScale>
+            <editAsPercentage>0</editAsPercentage>
+            <maxDouble>90</maxDouble>
+            <minDouble>-90</minDouble>
+            <showDisplay>0</showDisplay>
+            <stepDouble>0.5</stepDouble>
+            <valDouble>0</valDouble>
+            <vTxDoubleScale>100</vTxDoubleScale>
+            <suffix> </suffix>
+            <vTx>7</vTx>
+        </turntilt_roll_strength>
         <turntilt_angle_limit>
             <longName>Tiltback Angle Limit</longName>
             <type>1</type>
@@ -2804,6 +2826,28 @@ p, li { white-space: pre-wrap; }
             <suffix> °</suffix>
             <vTx>7</vTx>
         </turntilt_start_angle>
+        <turntilt_roll_start_angle>
+            <longName>Roll Angle Threshold</longName>
+            <type>1</type>
+            <transmittable>1</transmittable>
+            <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Minimum Roll Angle threshold to apply Turn Tiltback. Similar to a deadzone, except after reaching the set angle, it will apply as if it started from 0.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
+            <cDefine>CFG_DFLT_TURNTILT_ROLL_START_ANGLE</cDefine>
+            <editorDecimalsDouble>1</editorDecimalsDouble>
+            <editorScale>1</editorScale>
+            <editAsPercentage>0</editAsPercentage>
+            <maxDouble>45</maxDouble>
+            <minDouble>0</minDouble>
+            <showDisplay>0</showDisplay>
+            <stepDouble>0.5</stepDouble>
+            <valDouble>5</valDouble>
+            <vTxDoubleScale>100</vTxDoubleScale>
+            <suffix> °</suffix>
+            <vTx>7</vTx>
+        </turntilt_roll_start_angle>
         <turntilt_start_erpm>
             <longName>ERPM Threshold</longName>
             <type>2</type>
@@ -4390,8 +4434,10 @@ p, li { white-space: pre-wrap; }
         <ser>torquetilt_strength</ser>
         <ser>torquetilt_strength_regen</ser>
         <ser>turntilt_strength</ser>
+        <ser>turntilt_roll_strength</ser>
         <ser>turntilt_angle_limit</ser>
         <ser>turntilt_start_angle</ser>
+        <ser>turntilt_roll_start_angle</ser>
         <ser>turntilt_start_erpm</ser>
         <ser>turntilt_speed</ser>
         <ser>turntilt_erpm_boost</ser>
@@ -4539,6 +4585,7 @@ p, li { white-space: pre-wrap; }
                     <param>torquetilt_off_speed_downhill</param>
                     <param>::sep::Turn Tiltback</param>
                     <param>turntilt_strength</param>
+                    <param>turntilt_roll_strength</param>
                     <param>turntilt_angle_limit</param>
                     <param>turntilt_start_erpm</param>
                     <param>turntilt_speed</param>
@@ -4546,6 +4593,7 @@ p, li { white-space: pre-wrap; }
                     <param>turntilt_erpm_boost_end</param>
                     <param>turntilt_yaw_aggregate</param>
                     <param>turntilt_start_angle</param>
+                    <param>turntilt_roll_start_angle</param>
                     <param>turn_tilt.filter.time_constant</param>
                     <param>turn_tilt.filter.on_speed_time_constant</param>
                     <param>turn_tilt.filter.off_speed_time_constant</param>

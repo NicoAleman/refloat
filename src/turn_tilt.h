@@ -29,6 +29,8 @@ typedef struct {
     EMA yaw_change;
     float yaw_aggregate;
 
+    float roll_sin;
+
     float target;
     SmoothSetpoint setpoint;
 } TurnTilt;

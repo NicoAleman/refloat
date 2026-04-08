@@ -34,6 +34,8 @@ void turn_tilt_reset(TurnTilt *tt) {
     ema_reset(&tt->yaw_change, 0.0f);
     tt->yaw_aggregate = 0.0f;
 
+    tt->roll_sin = 0.0f;
+
     tt->target = 0.0f;
     smooth_setpoint_reset(&tt->setpoint);
 }
@@ -80,54 +82,70 @@ void turn_tilt_aggregate(TurnTilt *tt, const IMU *imu, float dt) {
     if (fabsf(tt->yaw_change.value) > 30.0f) {
         tt->yaw_aggregate += new_change;
     }
+
+    tt->roll_sin = sinf(deg2rad(fabsf(imu->roll)));
 }
 
 static void calculate_turn_tilt_target(
     TurnTilt *tt, const MotorData *md, const RefloatConfig *config
 ) {
-    if (config->turntilt_strength == 0) {
+    if (config->turntilt_strength == 0 && config->turntilt_roll_strength == 0) {
         return;
     }
 
-    float abs_yaw_change = fabsf(tt->yaw_change.value);
-    float abs_yaw_aggregate = fabsf(tt->yaw_aggregate);
+    float yaw_target = 0.0f;
+    if (config->turntilt_strength != 0) {
+        float abs_yaw_change = fabsf(tt->yaw_change.value);
+        float abs_yaw_aggregate = fabsf(tt->yaw_aggregate);
 
-    // Minimum threshold based on
-    // a) minimum degrees per second (yaw/turn increment)
-    // b) minimum yaw aggregate (to filter out wiggling on uneven road)
-    if (abs_yaw_aggregate < config->turntilt_start_angle || abs_yaw_change < 30.0f) {
+        // Minimum threshold based on
+        // a) minimum degrees per second (yaw/turn increment)
+        // b) minimum yaw aggregate (to filter out wiggling on uneven road)
+        if (abs_yaw_aggregate >= config->turntilt_start_angle && abs_yaw_change >= 30.0f) {
+            // Calculate desired angle
+            yaw_target = abs_yaw_change * LOOP_HERTZ_COMPAT_RECIP * config->turntilt_strength;
+
+            // Increase turntilt based on aggregate yaw change (at most: double it)
+            float aggregate_damper = 1.0;
+            if (md->abs_erpm < 2000) {
+                aggregate_damper = 0.5;
+            }
+            float agg_boost =
+                1 + aggregate_damper * abs_yaw_aggregate / config->turntilt_yaw_aggregate;
+            agg_boost = fminf(agg_boost, 2);
+            yaw_target *= agg_boost;
+        }
+    }
+
+    float roll_target = 0.0f;
+    if (config->turntilt_roll_strength != 0 &&
+        tt->roll_sin >= sinf(deg2rad(config->turntilt_roll_start_angle))) {
+        roll_target = tt->roll_sin * config->turntilt_roll_strength;
+    }
+
+    // if (yaw_target != 0.0f && roll_target != 0.0f && sign(yaw_target) == sign(roll_target)) {
+    //     tt->target = fabsf(yaw_target) >= fabsf(roll_target) ? yaw_target : roll_target;
+    // } else {
+    //     tt->target = yaw_target + roll_target;
+    // }
+    tt->target = yaw_target + roll_target;
+
+    // Apply speed scaling
+    float boost;
+    if (md->abs_erpm < config->turntilt_erpm_boost_end) {
+        boost = 1.0 + md->abs_erpm * tt->boost_per_erpm;
+    } else {
+        boost = 1.0 + (float) config->turntilt_erpm_boost / 100.0;
+    }
+    tt->target *= boost;
+
+    tt->target = clampf(tt->target, -config->turntilt_angle_limit, config->turntilt_angle_limit);
+
+    // Disable below erpm threshold otherwise add directionality
+    if (md->abs_erpm < config->turntilt_start_erpm) {
         tt->target = 0;
     } else {
-        // Calculate desired angle
-        tt->target = abs_yaw_change * LOOP_HERTZ_COMPAT_RECIP * config->turntilt_strength;
-
-        // Apply speed scaling
-        float boost;
-        if (md->abs_erpm < config->turntilt_erpm_boost_end) {
-            boost = 1.0 + md->abs_erpm * tt->boost_per_erpm;
-        } else {
-            boost = 1.0 + (float) config->turntilt_erpm_boost / 100.0;
-        }
-        tt->target *= boost;
-
-        // Increase turntilt based on aggregate yaw change (at most: double it)
-        float aggregate_damper = 1.0;
-        if (md->abs_erpm < 2000) {
-            aggregate_damper = 0.5;
-        }
-        boost = 1 + aggregate_damper * abs_yaw_aggregate / config->turntilt_yaw_aggregate;
-        boost = fminf(boost, 2);
-        tt->target *= boost;
-
-        tt->target =
-            clampf(tt->target, -config->turntilt_angle_limit, config->turntilt_angle_limit);
-
-        // Disable below erpm threshold otherwise add directionality
-        if (md->abs_erpm < config->turntilt_start_erpm) {
-            tt->target = 0;
-        } else {
-            tt->target *= md->erpm_sign;
-        }
+        tt->target *= md->erpm_sign;
     }
 }
 
