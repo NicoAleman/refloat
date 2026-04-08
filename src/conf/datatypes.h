@@ -322,8 +322,10 @@ typedef struct {
     float braketilt_strength;
     float braketilt_lingering;
     float turntilt_strength;
+    float turntilt_roll_strength;
     float turntilt_angle_limit;
     float turntilt_start_angle;
+    float turntilt_roll_start_angle;
     uint16_t turntilt_start_erpm;
     float turntilt_speed;
     uint16_t turntilt_erpm_boost;
