@@ -194,6 +194,7 @@ void lcm_light_ctrl_request(LcmData *lcm, unsigned char *cfg, int len) {
         return;
     }
 
+    lcm->payload_size = 0;
     int32_t idx = 0;
 
     lcm->brightness = min(cfg[idx++], 100u);
@@ -201,18 +202,9 @@ void lcm_light_ctrl_request(LcmData *lcm, unsigned char *cfg, int len) {
     lcm->status_brightness = min(cfg[idx++], 100u);
 
     if (len > 3) {
-        if (lcm->enabled) {
-            // Copy rest of payload into data for LCM to pull
-            lcm->payload_size = len - idx;
-            for (int i = 0; i < lcm->payload_size; i++) {
-                lcm->payload[i] = cfg[idx + i];
-            }
-        } else {
-            if (len > 5) {
-                // d->float_conf.led_mode = cfg[idx++];
-                // d->float_conf.led_mode_idle = cfg[idx++];
-                // d->float_conf.led_status_mode = cfg[idx++];
-            }
+        lcm->payload_size = min(len - idx, MAX_LCM_PAYLOAD_LENGTH);
+        for (int i = 0; i < lcm->payload_size; i++) {
+            lcm->payload[i] = cfg[idx + i];
         }
     }
 }
