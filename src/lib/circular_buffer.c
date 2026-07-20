@@ -74,8 +74,8 @@ bool circular_buffer_get(const CircularBuffer *cb, size_t i, void *item) {
     return true;
 }
 
-bool circular_buffer_pop(CircularBuffer *cb, size_t i, void *item) {
-    if (!circular_buffer_get(cb, i, item)) {
+bool circular_buffer_pop(CircularBuffer *cb, void *item) {
+    if (!circular_buffer_get(cb, 0, item)) {
         return false;
     }
 
