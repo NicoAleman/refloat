@@ -13,8 +13,9 @@
 
             (if v-cell-support {
                 (if (= (get-bms-val 'bms-data-version) 1) {
-                    (setq temp-min (get-bms-val 'bms-temps-adc 1))
-                    (setq temp-fet (get-bms-val 'bms-temps-adc 3))
+                    (var num-temps (get-bms-val 'bms-temp-adc-num))
+                    (if (> num-temps 1) (setq temp-min (get-bms-val 'bms-temps-adc 1)))
+                    (if (> num-temps 3) (setq temp-fet (get-bms-val 'bms-temps-adc 3)))
                 })
                 (setq v-min (get-bms-val 'bms-v-cell-min))
                 (setq v-max (get-bms-val 'bms-v-cell-max))
