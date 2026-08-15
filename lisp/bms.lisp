@@ -1,15 +1,13 @@
 (defun bms-loop () {
     (var v-cell-support (eq (first (trap (get-bms-val 'bms-v-cell-min))) 'exit-ok))
-    (var v-min 0)
-    (var v-max 0)
-    (var temp-min 0)
-    (var temp-max 0)
-    (var temp-fet -281)
     (loopwhile t {
         (if (and (>= (get-bms-val 'bms-can-id) 0) (ext-bms)) {
             (var msg-age (get-bms-val 'bms-msg-age))
-            (setq temp-max (get-bms-val 'bms-temp-cell-max))
-            (setq temp-min temp-max)
+            (var temp-max (get-bms-val 'bms-temp-cell-max))
+            (var temp-min temp-max)
+            (var temp-fet -281)
+            (var v-min 0)
+            (var v-max 0)
 
             (if v-cell-support {
                 (if (= (get-bms-val 'bms-data-version) 1) {
