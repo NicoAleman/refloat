@@ -2206,6 +2206,7 @@ Item {
 
         ["control.dt", {"name": "Control Loop dt", "color": "#e95314", "visible": false}],
         ["control.freq", {"name": "Control Loop Frequency", "color": "#69c180", "visible": false}],
+        ["control.latency", {"name": "Control Loop Latency", "color": "#ce77d2", "visible": false}],
 
         ["state.running", {"name": "Running", "color": "#3f6620", "visible": false}],
         ["state.wheelslip", {"name": "Wheelslip", "color": "#893075", "visible": false}],
@@ -2223,7 +2224,6 @@ Item {
         "#4bc6af",
         "#a15622",
         "#254f3a",
-        "#ce77d2",
         "#859b3b",
         "#dd4044",
         "#b58527",

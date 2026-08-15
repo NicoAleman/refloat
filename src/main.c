@@ -51,6 +51,7 @@
 #include "conf/datatypes.h"
 
 #include "konami.h"
+#include "latency_tracker.h"
 
 #include <math.h>
 #include <string.h>
@@ -734,6 +735,8 @@ static void imu_ref_callback(float *acc, float *gyro, float *mag, float dt) {
     unused(mag);
     Data *d = (Data *) ARG;
 
+    latency_tracker_update(&d->imu_latency_tracker, dt);
+
     time_t time = vesc_system_time_ticks();
 
     balance_filter_update(&d->balance_filter, gyro, acc, dt);
@@ -1187,6 +1190,7 @@ static void data_init(Data *d) {
         imu_sample_rate = 620;
     }
     frequency_tracker_init(&d->imu_freq_tracker, imu_sample_rate, &d->time);
+    latency_tracker_init(&d->imu_latency_tracker);
 
     balance_filter_init(&d->balance_filter);
 

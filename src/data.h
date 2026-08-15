@@ -30,6 +30,7 @@
 #include "haptic_feedback.h"
 #include "imu.h"
 #include "konami.h"
+#include "latency_tracker.h"
 #include "lcm.h"
 #include "leds.h"
 #include "motor_control.h"
@@ -97,6 +98,7 @@ typedef struct {
 
     FrequencyTracker main_freq_tracker;
     FrequencyTracker imu_freq_tracker;
+    LatencyTracker imu_latency_tracker;
 
     float startup_pitch_trickmargin, startup_pitch_tolerance;
     float tiltback_variable, tiltback_variable_max_erpm;
