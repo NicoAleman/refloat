@@ -2583,6 +2583,7 @@ static lbm_value ext_bms(lbm_value *args, lbm_uint argn) {
         d->bms.cell_ht = VESC_IF->lbm_dec_as_i32(args[3]);
         d->bms.bms_ht = VESC_IF->lbm_dec_as_i32(args[4]);
         d->bms.msg_age = VESC_IF->lbm_dec_as_float(args[5]);
+        timer_refresh(&d->time, &d->bms.push_timer);
     }
 
     return d->float_conf.bms.enabled ? VESC_IF->lbm_enc_sym_true : VESC_IF->lbm_enc_sym_nil;
