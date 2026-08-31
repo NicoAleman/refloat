@@ -18,6 +18,7 @@
 #ifndef BALANCE_FILTER_h
 #define BALANCE_FILTER_h
 
+#include "booster.h"
 #include "conf/datatypes.h"
 #include "filters/biquad.h"
 #include "filters/ema.h"
@@ -68,7 +69,14 @@ void balance_filter_configure(
 );
 
 void balance_filter_update(
-    BalanceFilterData *data, const MotorData *motor, float *gyro_xyz, float *accel_xyz, float dt
+    BalanceFilterData *data,
+    const MotorData *motor,
+    Booster *booster,
+    const RefloatConfig *config,
+    float proportional,
+    float *gyro_xyz,
+    float *accel_xyz,
+    float dt
 );
 
 float balance_filter_get_roll(const BalanceFilterData *data);

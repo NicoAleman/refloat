@@ -17,64 +17,73 @@
 
 #include "booster.h"
 
-#include "lib/utils.h"
-
 #include <math.h>
 
 void booster_init(Booster *b) {
-    ema_init(&b->torque);
+    ema_init(&b->forward);
+    ema_init(&b->braking);
     booster_reset(b);
 }
 
 void booster_reset(Booster *b) {
-    ema_reset(&b->torque, 0.0f);
+    ema_reset(&b->forward, 1.0f);
+    ema_reset(&b->braking, 0.0f);
 }
 
 void booster_configure(Booster *b, float frequency) {
-    ema_configure(&b->torque, 1.0f, frequency);
+    ema_configure(&b->forward, 1.0f, frequency);
+    ema_configure(&b->braking, 1.0f, frequency);
 }
 
 void booster_update(
-    Booster *b, const MotorData *md, const RefloatConfig *config, float proportional
+    Booster *b,
+    const MotorData *md,
+    const RefloatConfig *config,
+    float proportional,
+    float *kp_pitch
 ) {
-    float torque;
-    float angle;
-    float ramp;
-    if (md->braking) {
-        torque = config->brkbooster_current * TORQUE_CONSTANT_COMPAT;
-        angle = config->brkbooster_angle;
-        ramp = config->brkbooster_ramp;
-    } else {
-        torque = config->booster_current * TORQUE_CONSTANT_COMPAT;
-        angle = config->booster_angle;
-        ramp = config->booster_ramp;
+    ema_update(&b->braking, md->braking ? 1.0f : 0.0f);
+    float brake = b->braking.value;
+
+    // Riding Direction, or Torque Direction when using positive current
+    // toward opposite direction (e.g. transition from braking to accelerating
+    // backwards).
+    bool forward_target = md->forward;
+    if (!md->braking && md->erpm * md->dir_current < 0.0f) {
+        forward_target = md->dir_current > 0.0f;
+    }
+    ema_update(&b->forward, forward_target ? 1.0f : 0.0f);
+    float forward = b->forward.value;
+
+    // Weight controller_down vs battery_down by whether that side is the
+    // directional-nose (accel) or directional-tail (brake).
+    float controller_down = fmaxf(proportional, 0.0f);
+    float battery_down = fmaxf(-proportional, 0.0f);
+    float controller_match = 1.0f - fabsf(forward - (1.0f - brake));
+    float battery_match = 1.0f - fabsf(forward - brake);
+    float error = controller_down * controller_match + battery_down * battery_match;
+
+    float angle =
+        config->booster_angle + (config->brkbooster_angle - config->booster_angle) * brake;
+    float ramp = config->booster_ramp + (config->brkbooster_ramp - config->booster_ramp) * brake;
+
+    // 0 disables that side of Booster; keep the current Pitch KP.
+    float accel_target = config->booster_mahony_kp > 0.0f ? config->booster_mahony_kp : *kp_pitch;
+    float brake_target =
+        config->brkbooster_mahony_kp > 0.0f ? config->brkbooster_mahony_kp : *kp_pitch;
+    float target_kp = accel_target + (brake_target - accel_target) * brake;
+
+    // Only tighten (lower KP), higher than current Pitch KP is ignored.
+    if (target_kp <= 0.0f || *kp_pitch <= target_kp) {
+        return;
     }
 
-    // Make booster a bit stronger at higher speed (up to 2x stronger when braking)
-    const int boost_min_erpm = 3000;
-    if (md->abs_erpm > boost_min_erpm) {
-        float speedstiffness = fminf(1, (md->abs_erpm - boost_min_erpm) / 10000);
-        if (md->braking) {
-            // use higher current at speed when braking
-            torque += torque * speedstiffness;
+    if (error > angle) {
+        if (error - angle < ramp) {
+            float ratio = (error - angle) / ramp;
+            *kp_pitch = *kp_pitch + (target_kp - *kp_pitch) * ratio;
         } else {
-            // when accelerating, we reduce the booster start angle as we get faster
-            // strength remains unchanged
-            float angledivider = 1 + speedstiffness;
-            angle /= angledivider;
+            *kp_pitch = target_kp;
         }
     }
-
-    float abs_proportional = fabsf(proportional);
-    if (abs_proportional > angle) {
-        if (abs_proportional - angle < ramp) {
-            torque *= sign(proportional) * (abs_proportional - angle) / ramp;
-        } else {
-            torque *= sign(proportional);
-        }
-    } else {
-        torque = 0;
-    }
-
-    ema_update(&b->torque, torque);
 }

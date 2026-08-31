@@ -22,7 +22,10 @@
 #include "motor_data.h"
 
 typedef struct {
-    EMA torque;
+    // 1 = forward, 0 = backward
+    EMA forward;
+    // 0 = accel, 1 = brake
+    EMA braking;
 } Booster;
 
 void booster_init(Booster *b);
@@ -32,5 +35,9 @@ void booster_reset(Booster *b);
 void booster_configure(Booster *b, float frequency);
 
 void booster_update(
-    Booster *b, const MotorData *md, const RefloatConfig *config, float proportional
+    Booster *b,
+    const MotorData *md,
+    const RefloatConfig *config,
+    float proportional,
+    float *kp_pitch
 );
