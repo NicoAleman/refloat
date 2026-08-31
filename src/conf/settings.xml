@@ -1847,30 +1847,28 @@ p, li { white-space: pre-wrap; }
             <suffix> °</suffix>
             <vTx>7</vTx>
         </booster_ramp>
-        <booster_current>
-            <longName>Current Boost</longName>
+        <booster_mahony_kp>
+            <longName>Booster Pitch KP</longName>
             <type>1</type>
             <transmittable>1</transmittable>
             <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;NOTE: This feature is outdated and does not fully work as intended. If your tune doesn't already utilize Booster, we don't recommend adding it.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Extra current added to PID Loop, to be applied when accelerating when booster angle is reached (in relation to Setpoint). Can strengthen the board response at a desired specific angle when pushing the nose down.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_BOOSTER_CURRENT</cDefine>
-            <editorDecimalsDouble>1</editorDecimalsDouble>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Pitch KP for Booster to target. With the nose down, from the Start Angle, as True Pitch approaches &amp;quot;Start Angle + Ramp Up&amp;quot; (from Setpoint), we linearly transition from base Pitch KP to Booster Pitch KP, as long as Booster Pitch KP &amp;lt; base Pitch KP. If using Dynamic Pitch KP, we ramp from the current Dynamic Pitch KP to Booster Pitch KP. &lt;br /&gt;&lt;br /&gt;Set to 0 to disable this feature.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
+            <cDefine>CFG_DFLT_BOOSTER_MAHONY_KP</cDefine>
+            <editorDecimalsDouble>2</editorDecimalsDouble>
             <editorScale>1</editorScale>
             <editAsPercentage>0</editAsPercentage>
-            <maxDouble>100</maxDouble>
+            <maxDouble>3</maxDouble>
             <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
-            <stepDouble>2</stepDouble>
+            <stepDouble>0.1</stepDouble>
             <valDouble>0</valDouble>
-            <vTxDoubleScale>100</vTxDoubleScale>
-            <suffix> A</suffix>
+            <vTxDoubleScale>10000</vTxDoubleScale>
+            <suffix></suffix>
             <vTx>7</vTx>
-        </booster_current>
+        </booster_mahony_kp>
         <brkbooster_angle>
             <longName>Start Angle</longName>
             <type>1</type>
@@ -1923,30 +1921,28 @@ p, li { white-space: pre-wrap; }
             <suffix> °</suffix>
             <vTx>7</vTx>
         </brkbooster_ramp>
-        <brkbooster_current>
-            <longName>Current Boost</longName>
+        <brkbooster_mahony_kp>
+            <longName>Booster Pitch KP</longName>
             <type>1</type>
             <transmittable>1</transmittable>
             <description>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Roboto'; ; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;NOTE: This feature is outdated and does not fully work as intended. If your tune doesn't already utilize Booster, we don't recommend adding it.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Extra current added to PID Loop, to be applied when braking when booster angle is reached (in relation to Setpoint). Can strengthen the braking intensity at a desired specific angle when raising the nose / lowering the tail.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
-            <cDefine>CFG_DFLT_BRKBOOSTER_CURRENT</cDefine>
-            <editorDecimalsDouble>1</editorDecimalsDouble>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Pitch KP for Booster to target. With the tail down, from the Start Angle, as True Pitch approaches &amp;quot;Start Angle + Ramp Up&amp;quot; (from Setpoint), we linearly transition from base Pitch KP to Booster Pitch KP, as long as Booster Pitch KP &amp;lt; base Pitch KP. If using Dynamic Pitch KP, we ramp from the current Dynamic Pitch KP to Booster Pitch KP. &lt;br /&gt;&lt;br /&gt;Set to 0 to disable this feature.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</description>
+            <cDefine>CFG_DFLT_BRKBOOSTER_MAHONY_KP</cDefine>
+            <editorDecimalsDouble>2</editorDecimalsDouble>
             <editorScale>1</editorScale>
             <editAsPercentage>0</editAsPercentage>
-            <maxDouble>100</maxDouble>
+            <maxDouble>3</maxDouble>
             <minDouble>0</minDouble>
             <showDisplay>0</showDisplay>
-            <stepDouble>2</stepDouble>
+            <stepDouble>0.1</stepDouble>
             <valDouble>0</valDouble>
-            <vTxDoubleScale>100</vTxDoubleScale>
-            <suffix> A</suffix>
+            <vTxDoubleScale>10000</vTxDoubleScale>
+            <suffix></suffix>
             <vTx>7</vTx>
-        </brkbooster_current>
+        </brkbooster_mahony_kp>
         <torquetilt_start_current>
             <longName>Start Current Threshold</longName>
             <type>1</type>
@@ -4171,10 +4167,10 @@ p, li { white-space: pre-wrap; }
         <ser>ki_limit</ser>
         <ser>booster_angle</ser>
         <ser>booster_ramp</ser>
-        <ser>booster_current</ser>
+        <ser>booster_mahony_kp</ser>
         <ser>brkbooster_angle</ser>
         <ser>brkbooster_ramp</ser>
-        <ser>brkbooster_current</ser>
+        <ser>brkbooster_mahony_kp</ser>
         <ser>torquetilt_start_current</ser>
         <ser>torquetilt_angle_limit</ser>
         <ser>torquetilt_strength</ser>
@@ -4297,11 +4293,11 @@ p, li { white-space: pre-wrap; }
                     <param>::sep::Booster (Acceleration)</param>
                     <param>booster_angle</param>
                     <param>booster_ramp</param>
-                    <param>booster_current</param>
+                    <param>booster_mahony_kp</param>
                     <param>::sep::Booster (Braking)</param>
                     <param>brkbooster_angle</param>
                     <param>brkbooster_ramp</param>
-                    <param>brkbooster_current</param>
+                    <param>brkbooster_mahony_kp</param>
                 </subgroupParams>
             </subgroup>
             <subgroup>

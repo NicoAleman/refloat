@@ -76,7 +76,14 @@ void balance_filter_configure(BalanceFilterData *data, const RefloatConfig *conf
 }
 
 void balance_filter_update(
-    BalanceFilterData *data, const MotorData *motor, float *gyro_xyz, float *accel_xyz, float dt
+    BalanceFilterData *data,
+    const MotorData *motor,
+    Booster *booster,
+    const RefloatConfig *config,
+    float proportional,
+    float *gyro_xyz,
+    float *accel_xyz,
+    float dt
 ) {
     // Linear interpolation from start_kp_pitch to end_kp_pitch based on abs_erpm
     if (data->end_kp_pitch > 0 && data->dynamic_kp_erpm_end > data->dynamic_kp_erpm_start) {
@@ -93,6 +100,9 @@ void balance_filter_update(
     } else {
         data->kp_pitch = data->start_kp_pitch;
     }
+
+    // After Dynamic Pitch KP; booster may lower kp_pitch further.
+    booster_update(booster, motor, config, proportional, &data->kp_pitch);
 
     float gx = gyro_xyz[0];
     float gy = gyro_xyz[1];

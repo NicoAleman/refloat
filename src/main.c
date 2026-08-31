@@ -692,13 +692,9 @@ static void apply_noseangling(Data *d, float dt) {
 static void pid_control(Data *d, float dt) {
     pid_update(&d->pid, d->setpoint, &d->motor, &d->imu, &d->float_conf, dt);
 
-    float booster_proportional = d->setpoint - d->brake_tilt.setpoint.value - d->imu.pitch;
-    booster_update(&d->booster, &d->motor, &d->float_conf, booster_proportional);
-
-    // Rate P and Booster are pitch-based (as opposed to balance pitch based)
-    // They require to be filtered in, otherwise they'd cause a jerk
-    float pitch_based =
-        motor_data_torque_to_current(&d->motor, d->pid.rate_p + d->booster.torque.value);
+    // Rate P is pitch-based (as opposed to balance pitch based)
+    // It requires to be filtered in, otherwise it would cause a jerk
+    float pitch_based = motor_data_torque_to_current(&d->motor, d->pid.rate_p);
     if (d->softstart_pid_limit < d->motor.current_max) {
         pitch_based = fminf(fabs(pitch_based), d->softstart_pid_limit) * sign(pitch_based);
         d->softstart_pid_limit += 100.0f * dt;
@@ -739,7 +735,23 @@ static void imu_ref_callback(float *acc, float *gyro, float *mag, float dt) {
 
     time_t time = vesc_system_time_ticks();
 
-    balance_filter_update(&d->balance_filter, &d->motor, gyro, acc, dt);
+    float booster_proportional = 0.0f;
+
+    if (d->state.state == STATE_RUNNING) {
+        // True Pitch used for Booster
+        booster_proportional = d->setpoint - d->imu.pitch;
+    }
+
+    balance_filter_update(
+        &d->balance_filter,
+        &d->motor,
+        &d->booster,
+        &d->float_conf,
+        booster_proportional,
+        gyro,
+        acc,
+        dt
+    );
 
     frequency_tracker_update(&d->imu_freq_tracker, dt);
 
@@ -1256,7 +1268,7 @@ enum {
     COMMAND_CFG_SAVE = 4,  // save config to eeprom
     COMMAND_CFG_RESTORE = 5,  // restore config from eeprom
     COMMAND_TUNE_OTHER = 6,  // make runtime changes to startup/etc
-    COMMAND_BOOSTER = 8,  // change booster settings
+    COMMAND_BOOSTER = 8,  // unused; old current-based booster command is ignored
     COMMAND_PRINT_INFO = 9,  // print verbose info
     COMMAND_GET_ALLDATA = 10,  // send all data, compact
     COMMAND_EXPERIMENT = 11,  // generic cmd for sending data, used for testing/tuning new features
@@ -1316,7 +1328,8 @@ static void send_realtime_data(Data *d) {
         buffer_append_float32_auto(buffer, d->charging.current, &ind);
         buffer_append_float32_auto(buffer, d->charging.voltage, &ind);
     } else {
-        buffer_append_float32_auto(buffer, d->booster.torque.value, &ind);
+        // legacy booster torque slot; current-based booster was removed
+        buffer_append_float32_auto(buffer, 0.0f, &ind);
         buffer_append_float32_auto(buffer, d->motor.dir_current, &ind);
     }
     buffer_append_float32_auto(buffer, d->remote.input, &ind);
@@ -1366,7 +1379,7 @@ static void cmd_send_all_data(Data *d, unsigned char mode) {
         buffer[ind++] = d->remote.setpoint.value * 5 + 128;
 
         buffer_append_float16(buffer, d->imu.pitch, 10, &ind);
-        buffer[ind++] = d->booster.torque.value + 128;
+        buffer[ind++] = 128;  // legacy booster torque slot; current-based booster was removed
 
         // Now send motor stuff:
         buffer_append_float16(buffer, d->motor.batt_voltage, 10, &ind);
@@ -1468,33 +1481,6 @@ static void cmd_experiment(Data *d, unsigned char *cfg) {
     unused(cfg);
 }
 
-static void cmd_booster(Data *d, unsigned char *cfg) {
-    int h1, h2;
-    split(cfg[0], &h1, &h2);
-    d->float_conf.booster_angle = h1 + 5;
-    d->float_conf.booster_ramp = h2 + 2;
-
-    split(cfg[1], &h1, &h2);
-    if (h1 == 0) {
-        d->float_conf.booster_current = 0;
-    } else {
-        d->float_conf.booster_current = 8 + h1 * 2;
-    }
-
-    split(cfg[2], &h1, &h2);
-    d->float_conf.brkbooster_angle = h1 + 5;
-    d->float_conf.brkbooster_ramp = h2 + 2;
-
-    split(cfg[3], &h1, &h2);
-    if (h1 == 0) {
-        d->float_conf.brkbooster_current = 0;
-    } else {
-        d->float_conf.brkbooster_current = 8 + h1 * 2;
-    }
-
-    beep_alert(d, 1, false);
-}
-
 /**
  * cmd_runtime_tune		Extract tune info from 20byte message but don't write to EEPROM!
  */
@@ -1517,16 +1503,11 @@ static void cmd_runtime_tune(Data *d, unsigned char *cfg, int len) {
             d->float_conf.ki_limit = 0;
         }
 
-        split(cfg[2], &h1, &h2);
-        d->float_conf.booster_angle = h1 + 5;
-        d->float_conf.booster_ramp = h2 + 2;
+        // cfg[2] used to be booster angle/ramp; ignored so old apps cannot
+        // overwrite the Pitch KP booster with current-based encodings
 
         split(cfg[3], &h1, &h2);
-        if (h1 == 0) {
-            d->float_conf.booster_current = 0;
-        } else {
-            d->float_conf.booster_current = 8 + h1 * 2;
-        }
+        unused(h1);  // used to be booster current
         d->float_conf.turntilt_strength = h2;
 
         split(cfg[4], &h1, &h2);
@@ -1640,10 +1621,10 @@ static void cmd_tune_defaults(Data *d) {
     d->float_conf.ki_limit = CFG_DFLT_KI_LIMIT;
     d->float_conf.booster_angle = CFG_DFLT_BOOSTER_ANGLE;
     d->float_conf.booster_ramp = CFG_DFLT_BOOSTER_RAMP;
-    d->float_conf.booster_current = CFG_DFLT_BOOSTER_CURRENT;
+    d->float_conf.booster_mahony_kp = CFG_DFLT_BOOSTER_MAHONY_KP;
     d->float_conf.brkbooster_angle = CFG_DFLT_BRKBOOSTER_ANGLE;
     d->float_conf.brkbooster_ramp = CFG_DFLT_BRKBOOSTER_RAMP;
-    d->float_conf.brkbooster_current = CFG_DFLT_BRKBOOSTER_CURRENT;
+    d->float_conf.brkbooster_mahony_kp = CFG_DFLT_BRKBOOSTER_MAHONY_KP;
     d->float_conf.turntilt_strength = CFG_DFLT_TURNTILT_STRENGTH;
     d->float_conf.turntilt_angle_limit = CFG_DFLT_TURNTILT_ANGLE_LIMIT;
     d->float_conf.turntilt_start_angle = CFG_DFLT_TURNTILT_START_ANGLE;
@@ -2483,11 +2464,9 @@ static void on_command_received(unsigned char *buffer, unsigned int len) {
         return;
     }
     case COMMAND_BOOSTER: {
-        if (len == 6) {
-            cmd_booster(d, &buffer[2]);
-        } else {
-            log_error("Command data length incorrect: %u", len);
-        }
+        // Old command encodes current-based booster values; ignore so it cannot
+        // overwrite the Pitch KP booster with the wrong scale.
+        unused(len);
         return;
     }
     case COMMAND_FLYWHEEL: {

@@ -297,10 +297,10 @@ typedef struct {
     float ki_limit;
     float booster_angle;
     float booster_ramp;
-    float booster_current;
+    float booster_mahony_kp;
     float brkbooster_angle;
     float brkbooster_ramp;
-    float brkbooster_current;
+    float brkbooster_mahony_kp;
     float torquetilt_start_current;
     float torquetilt_angle_limit;
     float torquetilt_strength;

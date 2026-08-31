@@ -18,6 +18,7 @@
 #ifndef BALANCE_FILTER_h
 #define BALANCE_FILTER_h
 
+#include "booster.h"
 #include "conf/datatypes.h"
 #include "motor_data.h"
 
@@ -44,7 +45,14 @@ void balance_filter_init(BalanceFilterData *data);
 void balance_filter_configure(BalanceFilterData *data, const RefloatConfig *config);
 
 void balance_filter_update(
-    BalanceFilterData *data, const MotorData *motor, float *gyro_xyz, float *accel_xyz, float dt
+    BalanceFilterData *data,
+    const MotorData *motor,
+    Booster *booster,
+    const RefloatConfig *config,
+    float proportional,
+    float *gyro_xyz,
+    float *accel_xyz,
+    float dt
 );
 
 float balance_filter_get_roll(const BalanceFilterData *data);
