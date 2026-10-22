@@ -706,7 +706,11 @@ static void pid_control(Data *d, float dt) {
         d->softstart_pid_limit += 100.0f * dt;
     }
 
-    float new_current = motor_data_torque_to_current(&d->motor, d->pid.p + d->pid.i) + pitch_based;
+    d->pid.current_p = motor_data_torque_to_current(&d->motor, d->pid.p);
+    d->pid.current_i = motor_data_torque_to_current(&d->motor, d->pid.i);
+    d->pid.current_rate_p = pitch_based;
+
+    float new_current = d->pid.current_p + d->pid.current_i + d->pid.current_rate_p;
     float current_limit;
     if (d->state.mode == MODE_HANDTEST) {
         current_limit = 7;

@@ -34,6 +34,9 @@ void pid_reset(PID *pid) {
     pid->p = 0;
     pid->i = 0;
     pid->rate_p = 0;
+    pid->current_p = 0.0f;
+    pid->current_i = 0.0f;
+    pid->current_rate_p = 0.0f;
 
     pid->p_fwd_scale.value = 1.0f;
     pid->rate_p_fwd_scale.value = 1.0f;

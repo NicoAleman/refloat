@@ -27,6 +27,11 @@ typedef struct {
     float i;
     float rate_p;  // used instead of d, works better with high Mahony KP
 
+    // Motor current [A] from each term after torque conversion (pid_control telemetry)
+    float current_p;
+    float current_i;
+    float current_rate_p;
+
     // PID brake scaling
     EMA p_fwd_scale;
     EMA rate_p_fwd_scale;
